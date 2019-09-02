@@ -1,0 +1,16 @@
+# Don't include compiled C# binaries
+Bot/
+bin/
+obj/
+
+# Don't include IDE specific files
+.idea/
+.vs/
+.vscode/
+
+# Don't include any secrets
+config.yml
+
+# Don't include my personal dev script
+dev_sql.yml
+spin_dev_sql.sh
