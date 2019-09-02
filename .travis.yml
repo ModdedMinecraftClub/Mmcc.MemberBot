@@ -2,5 +2,4 @@ language: csharp
 dotnet: 2.2.401
 mono: none
 script:
-  - cd Scripts
   - ./build.sh
