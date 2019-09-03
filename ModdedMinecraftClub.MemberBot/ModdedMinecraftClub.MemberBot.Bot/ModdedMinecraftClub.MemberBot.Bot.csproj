@@ -13,4 +13,8 @@
       <PackageReference Include="YamlDotNet" Version="6.1.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ModdedMinecraftClub.MemberBot.Core\ModdedMinecraftClub.MemberBot.Core.csproj" />
+    </ItemGroup>
+
 </Project>
