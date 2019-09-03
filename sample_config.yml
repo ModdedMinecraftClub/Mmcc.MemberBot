@@ -1,6 +1,9 @@
 mysql:
-  server_ip: 0
+  serverIp: ""
   port: 0
-  name: ""
+  databaseName: ""
   username: ""
   password: ""
+discord:
+  prefix: ""
+  token: ""
