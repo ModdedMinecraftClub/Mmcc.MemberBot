@@ -26,6 +26,6 @@ PrepareDir("Bot")
 
 [string]$destination = ".\Bot\"
 
-Copy-Item -Force -Recurse $source -Destination $destination
+Move-Item -Force $source -Destination $destination
 
 Write-Output "`n`nDone."
