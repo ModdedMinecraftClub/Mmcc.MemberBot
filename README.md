@@ -19,7 +19,7 @@ A Discord bot for managing MMCC Member Applications.
     - Linux: [here](https://dotnet.microsoft.com/download/linux-package-manager/rhel/runtime-current)
     - Windows: [here](https://dotnet.microsoft.com/download/thank-you/dotnet-runtime-2.2.6-windows-hosting-bundle-installer)
 2. Git clone this repo.
-3. Run `build.sh` (Linux) or `build.ps1` (Windows). This will create a directory named `Bot` within the root directory of this repo.
+3. Run `build.sh` (Linux) or `build.ps1` (Windows). This will create a directory named `Bot` within the root directory of this repo with compiled C# binaries.
 4. Rename `sample_config.yml` to `config.yml` and fill it in.
 5. To run the bot navigate to the `Bot` directory and run the following command:
 `dotnet ModdedMinecraftClub.MemberBot.Bot.dll`
