@@ -5,13 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
+using ModdedMinecraftClub.MemberBot.Bot.ConfigModels;
 using ModdedMinecraftClub.MemberBot.Bot.Services;
-using ModdedMinecraftClub.MemberBot.Core;
 
 namespace ModdedMinecraftClub.MemberBot.Bot
 {
     class Program
     {
+        public static readonly ConfigRoot Config = Yaml.GetConfig();
         static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
 
@@ -23,7 +24,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
 
                 client.Log += LogAsync;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
-                await client.LoginAsync(TokenType.Bot, YamlConfiguration.Config.Discord.Token);
+                await client.LoginAsync(TokenType.Bot, Config.Discord.Token);
                 await client.StartAsync();
                 // Here we initialize the logic required to register our commands.
                 await services.GetRequiredService<CommandHandlingService>().InitializeAsync();

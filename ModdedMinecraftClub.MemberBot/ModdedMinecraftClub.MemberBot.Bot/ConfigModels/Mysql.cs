@@ -1,6 +1,6 @@
-namespace ModdedMinecraftClub.MemberBot.Core.ConfigModels
+﻿namespace ModdedMinecraftClub.MemberBot.Bot.ConfigModels
 {
-    public class MySql
+    public class Mysql
     {
         public string ServerIp { get; set; }
         public int Port { get; set; }

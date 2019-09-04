@@ -1,11 +1,11 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
-using ModdedMinecraftClub.MemberBot.Core;
 
 namespace ModdedMinecraftClub.MemberBot.Bot.Services
 {
@@ -50,10 +50,44 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services
             if (message.Channel.Name.Equals("member-apps"))
             {
                 var channel = message.Channel;
+
+                if (message.Attachments.Count == 0)
+                {
+                    return;
+                }
+
+                var linkToApplication = message.GetJumpUrl();
+                var attachedPic = message.Attachments.ToList()[0].Url;
+                var content = message.Content;
+                var author = message.Author;
+                var authorId = message.Author.Id;
+                var time = message.Timestamp;
+                var appId = 1;
+                var status = ApplicationStatus.Pending;
                 
-                await channel.SendMessageAsync("hello, you're in #member-apps");
+                var b = new EmbedBuilder();
+                b.AddField($"Application by {author}", $"Author's Discord ID: {authorId}\nApplication ID: {appId}");
+                b.AddField("Provided details", content);
+                b.AddField("Link to original message", linkToApplication);
+                b.WithThumbnailUrl(attachedPic);
+                b.WithFooter($"Applied at {time}");
+
+                if (status == ApplicationStatus.Accepted)
+                {
+                    b.WithColor(Color.Green);
+                }
+                else if (status == ApplicationStatus.Rejected)
+                {
+                    b.WithColor(Color.Red);
+                }
+                else
+                {
+                    b.WithColor(Color.Blue);
+                }
+
+                await channel.SendMessageAsync("", false, b.Build());
             }
-            else if (!message.HasCharPrefix(YamlConfiguration.Config.Discord.Prefix, ref argPos))
+            else if (!message.HasCharPrefix(Program.Config.Discord.Prefix, ref argPos))
             {
                 return;
             }
