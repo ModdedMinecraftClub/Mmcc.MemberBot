@@ -47,45 +47,28 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services
             // offset where the prefix ends
             var argPos = 0;
 
-            if (message.Channel.Name.Equals("member-apps"))
+            if (message.Channel.Name.Equals(Program.Config.Discord.MemberAppsChannelName) && message.Attachments.Count != 0)
             {
                 var channel = message.Channel;
-
-                if (message.Attachments.Count == 0)
-                {
-                    return;
-                }
-
-                var linkToApplication = message.GetJumpUrl();
-                var attachedPic = message.Attachments.ToList()[0].Url;
-                var content = message.Content;
-                var author = message.Author;
-                var authorId = message.Author.Id;
-                var time = message.Timestamp;
-                var appId = 1;
-                var status = ApplicationStatus.Pending;
                 
-                var b = new EmbedBuilder();
-                b.AddField($"Application by {author}", $"Author's Discord ID: {authorId}\nApplication ID: {appId}");
-                b.AddField("Provided details", content);
-                b.AddField("Link to original message", linkToApplication);
-                b.WithThumbnailUrl(attachedPic);
-                b.WithFooter($"Applied at {time}");
+                var app = new Application
+                {
+                    AppStatus = ApplicationStatus.Pending,
+                    AppTime = message.Timestamp.ToString(),
+                    AuthorName = message.Author.ToString(),
+                    AuthorDiscordId = message.Author.Id,
+                    MessageContent = message.Content,
+                    MessageUrl = message.GetJumpUrl(),
+                    ImageUrl = message.Attachments.ToList()[0].Url
+                };
 
-                if (status == ApplicationStatus.Accepted)
+                using (var c = new DatabaseConnection())
                 {
-                    b.WithColor(Color.Green);
-                }
-                else if (status == ApplicationStatus.Rejected)
-                {
-                    b.WithColor(Color.Red);
-                }
-                else
-                {
-                    b.WithColor(Color.Blue);
+                    c.InsertNewApplication(app);
                 }
 
-                await channel.SendMessageAsync("", false, b.Build());
+                await channel.SendMessageAsync(
+                    "Your application has been submitted and you should hear from a staff member soon.");
             }
             else if (!message.HasCharPrefix(Program.Config.Discord.Prefix, ref argPos))
             {

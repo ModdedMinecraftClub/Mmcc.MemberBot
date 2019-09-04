@@ -4,5 +4,6 @@
     {
         public char Prefix { get; set; }
         public string Token { get; set; }
+        public string MemberAppsChannelName { get; set; }
     }
 }
