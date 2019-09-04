@@ -14,7 +14,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         bool DoesTableExist();
     }
     
-    public class DatabaseConnection : IDisposable
+    public class DatabaseConnection : IDisposable, IDatabaseConnection
     {
         private readonly MySqlConnection _connection;
 
@@ -54,6 +54,11 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             var q = _connection.Query<int>(sql, new { name }).ToList();
 
             return q[0] != 0;
+        }
+
+        public void CreateTable()
+        {
+            
         }
 
         public void Dispose()
