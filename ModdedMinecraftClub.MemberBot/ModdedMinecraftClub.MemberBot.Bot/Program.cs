@@ -18,6 +18,10 @@ namespace ModdedMinecraftClub.MemberBot.Bot
 
         public async Task MainAsync()
         {
+            Console.WriteLine("Starting ModdedMinecraftClub.MemberBot.Bot...\n");
+            
+            StartupChecks();
+            
             using (var services = ConfigureServices())
             {
                 var client = services.GetRequiredService<DiscordSocketClient>();
@@ -48,6 +52,29 @@ namespace ModdedMinecraftClub.MemberBot.Bot
                 .AddSingleton<CommandHandlingService>()
                 .AddSingleton<HttpClient>()
                 .BuildServiceProvider();
+        }
+
+        private static void StartupChecks()
+        {
+            using (var c = new DatabaseConnection())
+            {
+                var exists = c.DoesTableExist();
+                
+                Console.WriteLine("Checking if \"applications\" table exists...\n");
+
+                if (!exists)
+                {
+                    Console.WriteLine("Couldn't find the table. Creating...");
+                    
+                    c.CreateTable();
+                    
+                    Console.WriteLine("Successfully created the table. Starting the bot...\n");
+                }
+                else
+                {
+                    Console.WriteLine("Found the table. Starting the bot...\n");
+                }
+            }
         }
     }
 }
