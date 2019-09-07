@@ -14,7 +14,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
     {
         [Command("approve", RunMode = RunMode.Async)]
         [RequireUserPermission(GuildPermission.BanMembers)]
-        public async Task Approve(int applicationId)
+        public async Task Approve(int applicationId, string serverPrefix, string ign)
         {
             using (var c = new DatabaseConnection())
             {
@@ -22,13 +22,22 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
 
                 if (app is null)
                 {
-                    await Context.Channel.SendMessageAsync($":x: Application with ID `{applicationId}` does not exist.");
-                    
+                    await Context.Channel.SendMessageAsync(
+                        $":x: Application with ID `{applicationId}` does not exist.");
+
                     return;
                 }
+
+                var channels = Context.Guild.TextChannels;
+                var polychatChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.PolychatInteractionChannel));
+                var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.MemberAppsChannelName));
+                
+                await polychatChannel.SendMessageAsync($"!promote {serverPrefix} {ign}");
                 
                 c.MarkAsApproved(applicationId);
 
+                await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}> Congratulations, your application has been approved.");
+                
                 await Context.Channel.SendMessageAsync($":white_check_mark: **Approved** application with ID: `{applicationId}`");
             }
         }
@@ -48,8 +57,13 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                     return;
                 }
                 
+                var channels = Context.Guild.TextChannels;
+                var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.MemberAppsChannelName));
+                
                 c.MarkAsRejected(applicationId);
-
+                
+                await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}> Unfortunately, your application has been rejected.");
+                
                 await Context.Channel.SendMessageAsync($":white_check_mark: **Rejected** application with ID `{applicationId}`");
             }
         }

@@ -11,5 +11,8 @@ discord:
   prefix: ""
   # discord bot token (obtainable at discordapp.com/developers)
   token: ""
-  # the name of the channel with the player apps (e.g. #member-apps) (not the staff spam channel)
+  # put the name of the channel without '#'
+  # the name of the channel with the player apps (e.g. #member-apps) (not the staff spam channel)  
   memberAppsChannelName: ""
+  # the name of the channel to which member-bot will send polychat commands
+  polychatInteractionChannel: ""
