@@ -16,7 +16,7 @@ function PrepareDir {
 
         Set-Location ..
     } else {
-        mkdir Bot
+        mkdir $dirName
     }
 }
 
