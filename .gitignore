@@ -7,6 +7,7 @@ obj/
 .idea/
 .vs/
 .vscode/
+*.DotSettings
 
 # Don't include any secrets
 config.yml
