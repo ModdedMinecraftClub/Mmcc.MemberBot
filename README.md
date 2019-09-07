@@ -15,9 +15,9 @@ A Discord bot for managing MMCC Member Applications.
 - `reject <application id>` reject a particular application
 
 ## Installation
-1. Download .NET Core Runtime from:
-    - Linux: [here](https://dotnet.microsoft.com/download/linux-package-manager/rhel/runtime-current)
-    - Windows: [here](https://dotnet.microsoft.com/download/thank-you/dotnet-runtime-2.2.6-windows-hosting-bundle-installer)
+1. Download .NET Core SDK from:
+    - Linux: [here](https://dotnet.microsoft.com/download/linux-package-manager/rhel/sdk-current)
+    - Windows: [here](https://dotnet.microsoft.com/download/thank-you/dotnet-sdk-2.2.401-windows-x64-installer)
 2. Clone this repo.
 3. Run `build.sh` (Linux) or `build.ps1` (Windows). This will create a directory named `Bot` within the root directory of this repo with compiled C# binaries.
 4. Rename `sample_config.yml` to `config.yml` and fill it in.
