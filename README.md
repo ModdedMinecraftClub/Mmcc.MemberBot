@@ -15,9 +15,9 @@ A Discord bot for managing MMCC Member Applications.
 - `reject <application id>` reject a particular application
 
 ## Dependencies
-- polychat
-- polychat-client
-- .NET Core SDK
+- [ModdedMinecraftClub/polychat](https://github.com/ModdedMinecraftClub/polychat)
+- [ModdedMinecraftClub/polychat-client](https://github.com/ModdedMinecraftClub/polychat)
+- [.NET Core SDK](https://dotnet.microsoft.com/download)
 
 ## Installation
 1. Deploy [polychat](https://github.com/ModdedMinecraftClub/polychat) and [polychat-client](https://github.com/ModdedMinecraftClub/polychat-client).
