@@ -14,7 +14,7 @@ A Discord bot for managing MMCC Member Applications.
 - `view <application id>` view a particular application
 
 **Staff-only commands**
-- `approve <application id> <serverPrefix> <ign>` approve a particular application
+- `approve <application id> <server prefix> <ign>` approve a particular application
 - `reject <application id>` reject a particular application
 
 ## Dependencies
