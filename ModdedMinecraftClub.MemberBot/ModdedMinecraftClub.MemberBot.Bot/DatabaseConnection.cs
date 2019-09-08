@@ -10,9 +10,9 @@ namespace ModdedMinecraftClub.MemberBot.Bot
     {
         bool DoesTableExist();
         void CreateTable();
-        IEnumerable<Application> GetAllPending();
-        IEnumerable<Application> GetLast20Approved();
-        IEnumerable<Application> GetLast20Rejected();
+        List<Application> GetAllPending();
+        List<Application> GetLast20Approved();
+        List<Application> GetLast20Rejected();
         Application GetById(int applicationId);
         void MarkAsApproved(int applicationId);
         void MarkAsRejected(int applicationId);
@@ -64,7 +64,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             _connection.Execute(sql, application);
         }
 
-        public IEnumerable<Application> GetAllPending()
+        public List<Application> GetAllPending()
         {
             const string sql =
                 "select * from applications where AppStatus = 0 order by AppId";
@@ -72,7 +72,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             return _connection.Query<Application>(sql).ToList();
         }
         
-        public IEnumerable<Application> GetLast20Approved()
+        public List<Application> GetLast20Approved()
         {
             const string sql =
                 "select * from applications where AppStatus = 1 order by AppId limit 20";
@@ -80,7 +80,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             return _connection.Query<Application>(sql).ToList();
         }
         
-        public IEnumerable<Application> GetLast20Rejected()
+        public List<Application> GetLast20Rejected()
         {
             const string sql =
                 "select * from applications where AppStatus = 2 order by AppId limit 20";
