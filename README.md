@@ -1,4 +1,4 @@
-# mmcc-member-bot
+# MMCC Member Bot
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue)](https://github.com/ModdedMinecraftClub/mmcc-member-bot/blob/master/LICENSE)
 ![OS](https://img.shields.io/badge/platform-linux%20%7C%20windows-orange)
 [![Framework](https://img.shields.io/badge/framework-.NET%20Core%202.2-blueviolet)](https://dotnet.microsoft.com/download)
