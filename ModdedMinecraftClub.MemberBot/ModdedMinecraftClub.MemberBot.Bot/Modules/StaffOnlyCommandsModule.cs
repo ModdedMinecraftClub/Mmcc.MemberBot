@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -12,6 +11,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public class StaffOnlyCommandsModule : ModuleBase<SocketCommandContext>
     {
+        #region Member Applications
         [Command("approve", RunMode = RunMode.Async)]
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task Approve(int applicationId, string serverPrefix, string ign)
@@ -29,8 +29,14 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 }
 
                 var channels = Context.Guild.TextChannels;
+                var roles = Context.Guild.Roles;
+                var users = Context.Guild.Users;
                 var polychatChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.PolychatInteractionChannel));
                 var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.MemberAppsChannelName));
+                var memberRole = roles.First(role => role.Name.Contains($"[{serverPrefix.ToUpper()}]"));
+                var userToPromote = users.First(user => user.Id.Equals(app.AuthorDiscordId));
+
+                await userToPromote.AddRoleAsync(memberRole);
                 
                 await polychatChannel.SendMessageAsync($"!promote {serverPrefix} {ign}");
                 
@@ -67,5 +73,6 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 await Context.Channel.SendMessageAsync($":white_check_mark: **Rejected** application with ID `{applicationId}`");
             }
         }
+        #endregion
     }
 }
