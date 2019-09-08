@@ -68,7 +68,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services
                 }
 
                 await channel.SendMessageAsync(
-                    "Your application has been submitted and you should hear from a staff member soon.");
+                    "Your application has been submitted and you will be pinged once it has been processed.");
             }
             else if (!message.HasCharPrefix(Program.Config.Discord.Prefix, ref argPos))
             {

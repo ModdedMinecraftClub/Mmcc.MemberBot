@@ -8,15 +8,12 @@ namespace ModdedMinecraftClub.MemberBot.Bot
 {
     public interface IDatabaseConnection
     {
-        void ExecuteRawNonQuery(string sql);
-        void ExecuteRawNonQuery<T>(string sql, T objectToInsert);
-        List<T> ExecuteRawQuery<T>(string sql);
         bool DoesTableExist();
         void CreateTable();
-        List<Application> GetAllPending();
+        IEnumerable<Application> GetAllPending();
+        IEnumerable<Application> GetLast20Approved();
+        IEnumerable<Application> GetLast20Rejected();
         Application GetById(int applicationId);
-        List<Application> GetLast20Approved();
-        List<Application> GetLast20Rejected();
         void MarkAsApproved(int applicationId);
         void MarkAsRejected(int applicationId);
     }
@@ -37,21 +34,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             return $"Server={config.ServerIp};Port={config.Port};Database={config.DatabaseName};Uid={config.Username};Pwd={config.Password}";
         }
         
-        public void ExecuteRawNonQuery(string sql)
-        {
-            _connection.Execute(sql);
-        }
-
-        public void ExecuteRawNonQuery<T>(string sql, T objectToInsert)
-        {
-            _connection.Execute(sql, objectToInsert);
-        }
-
-        public List<T> ExecuteRawQuery<T>(string sql)
-        {
-            return _connection.Query<T>(sql).ToList();
-        }
-
+        #region Startup Checks
         public bool DoesTableExist()
         {
             var name = Program.Config.Mysql.DatabaseName;
@@ -70,7 +53,9 @@ namespace ModdedMinecraftClub.MemberBot.Bot
 
             _connection.Execute(sql);
         }
-
+        #endregion
+        
+        #region Member Applications
         public void InsertNewApplication(Application application)
         {
             const string sql =
@@ -79,11 +64,27 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             _connection.Execute(sql, application);
         }
 
-        public List<Application> GetAllPending()
+        public IEnumerable<Application> GetAllPending()
         {
             const string sql =
                 "select * from applications where AppStatus = 0 order by AppId";
 
+            return _connection.Query<Application>(sql).ToList();
+        }
+        
+        public IEnumerable<Application> GetLast20Approved()
+        {
+            const string sql =
+                "select * from applications where AppStatus = 1 order by AppId limit 20";
+            
+            return _connection.Query<Application>(sql).ToList();
+        }
+        
+        public IEnumerable<Application> GetLast20Rejected()
+        {
+            const string sql =
+                "select * from applications where AppStatus = 2 order by AppId limit 20";
+            
             return _connection.Query<Application>(sql).ToList();
         }
         
@@ -95,22 +96,6 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             var l = _connection.Query<Application>(sql, new { AppId = applicationId }).ToList();
 
             return !l.Any() ? null : l[0];
-        }
-        
-        public List<Application> GetLast20Approved()
-        {
-            const string sql =
-                "select * from applications where AppStatus = 1 order by AppId limit 20";
-            
-            return _connection.Query<Application>(sql).ToList();
-        }
-        
-        public List<Application> GetLast20Rejected()
-        {
-            const string sql =
-                "select * from applications where AppStatus = 2 order by AppId limit 20";
-            
-            return _connection.Query<Application>(sql).ToList();
         }
 
         public void MarkAsApproved(int applicationId)
@@ -128,6 +113,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
 
             _connection.Execute(sql, new { AppId = applicationId });
         }
+        #endregion Member Applications
 
         public void Dispose()
         {

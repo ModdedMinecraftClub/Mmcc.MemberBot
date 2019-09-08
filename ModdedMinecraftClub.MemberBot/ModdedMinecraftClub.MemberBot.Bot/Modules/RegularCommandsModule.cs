@@ -12,6 +12,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public class RegularCommandsModule : ModuleBase<SocketCommandContext>
     {
+        #region Member Applications
         [Command("pending", RunMode = RunMode.Async)]
         public async Task Pending()
         {
@@ -112,5 +113,6 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 await Context.Channel.SendMessageAsync("", false, b.Build());
             }
         }
+        #endregion
     }
 }
