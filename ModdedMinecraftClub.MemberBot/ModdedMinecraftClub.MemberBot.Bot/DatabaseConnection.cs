@@ -14,7 +14,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         List<Application> GetLast20Approved();
         List<Application> GetLast20Rejected();
         Application GetById(int applicationId);
-        void MarkAsApproved(int applicationId);
+        void MarkAsApproved(int applicationId, string prefix);
         void MarkAsRejected(int applicationId);
     }
     
@@ -24,14 +24,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
 
         public DatabaseConnection()
         {
-            _connection = new MySqlConnection(GetConnectionString());
-        }
-
-        private static string GetConnectionString()
-        {
-            var config = Program.Config.Mysql;
-            
-            return $"Server={config.ServerIp};Port={config.Port};Database={config.DatabaseName};Uid={config.Username};Pwd={config.Password}";
+            _connection = new MySqlConnection(Helper.GetMySqlConnectionString());
         }
         
         #region Startup Checks
@@ -49,7 +42,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         public void CreateTable()
         {
             const string sql =
-                "create table applications\n(\n\tAppId int not null auto_increment,\n\tAppStatus int not null,\n\tAppTime varchar(50) null,\n\tAuthorName varchar(50) not null,\n\tAuthorDiscordId long null,\n\tMessageContent varchar(800) null,\n    MessageUrl varchar(250) not null,\n\tImageUrl varchar(250) null,\n\tprimary key (AppId)\n);";
+                "create table applications\n(\n\tAppId int not null auto_increment,\n\tAppStatus int not null,\n\tAppTime varchar(50) null,\n\tAuthorName varchar(50) not null,\n\tAuthorDiscordId long not null,\n\tMessageContent varchar(800) null,\n    MessageUrl varchar(250) not null,\n\tImageUrl varchar(250) null,\n\tPrefix varchar(5) null,\n\tprimary key (AppId)\n);";
 
             _connection.Execute(sql);
         }
@@ -98,12 +91,16 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             return !l.Any() ? null : l[0];
         }
 
-        public void MarkAsApproved(int applicationId)
+        public void MarkAsApproved(int applicationId, string prefix)
         {
             const string sql =
-                "update applications\nset AppStatus = 1\nwhere AppId = @AppId";
+                "update applications set AppStatus = 1, Prefix = @Prefix where AppId = @AppId";
 
-            _connection.Execute(sql, new { AppId = applicationId });
+            _connection.Execute(sql, new
+            {
+                AppId = applicationId,
+                Prefix = prefix
+            });
         }
 
         public void MarkAsRejected(int applicationId)

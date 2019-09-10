@@ -8,10 +8,11 @@ create table applications
 	AppStatus int not null,
 	AppTime varchar(50) null,
 	AuthorName varchar(50) not null,
-	AuthorDiscordId long null,
+	AuthorDiscordId long not null,
 	MessageContent varchar(800) null,
     MessageUrl varchar(250) not null,
 	ImageUrl varchar(250) null,
+	Prefix varchar(5) null,
 	primary key (AppId)
 );
 

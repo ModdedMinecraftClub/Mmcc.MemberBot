@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
+using Hangfire;
+using Hangfire.MySql.Core;
 using ModdedMinecraftClub.MemberBot.Bot.ConfigModels;
 using ModdedMinecraftClub.MemberBot.Bot.Services;
 
@@ -21,19 +23,28 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             Console.WriteLine("Starting ModdedMinecraftClub.MemberBot.Bot...\n");
             
             StartupChecks();
+
+            GlobalConfiguration.Configuration
+                .UseColouredConsoleLogProvider()
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseStorage(new MySqlStorage(Helper.GetMySqlConnectionString()));
             
-            using (var services = ConfigureServices())
+            using (var server = new BackgroundJobServer())
             {
-                var client = services.GetRequiredService<DiscordSocketClient>();
+                using (var services = ConfigureServices())
+                {
+                    var client = services.GetRequiredService<DiscordSocketClient>();
 
-                client.Log += LogAsync;
-                services.GetRequiredService<CommandService>().Log += LogAsync;
-                await client.LoginAsync(TokenType.Bot, Config.Discord.Token);
-                await client.StartAsync();
-                // Here we initialize the logic required to register our commands.
-                await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
+                    client.Log += LogAsync;
+                    services.GetRequiredService<CommandService>().Log += LogAsync;
+                    await client.LoginAsync(TokenType.Bot, Config.Discord.Token);
+                    await client.StartAsync();
+                    // Here we initialize the logic required to register our commands.
+                    await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
 
-                await Task.Delay(-1);
+                    await Task.Delay(-1);
+                }
             }
         }
 
