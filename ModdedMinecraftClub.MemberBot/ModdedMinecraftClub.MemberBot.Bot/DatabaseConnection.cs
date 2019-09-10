@@ -3,19 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using Dapper;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 
 namespace ModdedMinecraftClub.MemberBot.Bot
 {
     public interface IDatabaseConnection
     {
+        #region Startup Checks
+
         bool DoesTableExist();
         void CreateTable();
+
+        #endregion
+
+        #region Member Applications
+
         List<Application> GetAllPending();
         List<Application> GetLast20Approved();
         List<Application> GetLast20Rejected();
         Application GetById(int applicationId);
         void MarkAsApproved(int applicationId, string prefix);
         void MarkAsRejected(int applicationId);
+
+        #endregion
+
+        #region Hangfire
+
+        IEnumerable<JobDto> GetJobs(JobStatus jobStatus);
+
+        #endregion
     }
     
     public class DatabaseConnection : IDisposable, IDatabaseConnection
@@ -28,6 +44,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         }
         
         #region Startup Checks
+        
         public bool DoesTableExist()
         {
             var name = Program.Config.Mysql.DatabaseName;
@@ -46,9 +63,11 @@ namespace ModdedMinecraftClub.MemberBot.Bot
 
             _connection.Execute(sql);
         }
+        
         #endregion
         
         #region Member Applications
+        
         public void InsertNewApplication(Application application)
         {
             const string sql =
@@ -110,8 +129,21 @@ namespace ModdedMinecraftClub.MemberBot.Bot
 
             _connection.Execute(sql, new { AppId = applicationId });
         }
+        
         #endregion Member Applications
 
+        #region Hangfire
+
+        public IEnumerable<JobDto> GetJobs(JobStatus jobStatus)
+        {
+            const string sql =
+                "SELECT hangfire_job.Id, hangfire_job.InvocationData, hangfire_job.Arguments,\n       hangfire_job.CreatedAt, hangfire_state.Data\nFROM hangfire_job, hangfire_state\nWHERE hangfire_job.StateName LIKE CONCAT('%', @Status, '%')\nAND hangfire_job.Id = hangfire_state.JobId\nAND hangfire_job.StateName = hangfire_state.Name;";
+
+            return _connection.Query<JobDto>(sql, new { Status = jobStatus.ToString() });
+        }
+        
+        #endregion
+        
         public void Dispose()
         {
            _connection.Dispose();
