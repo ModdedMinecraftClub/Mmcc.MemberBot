@@ -23,7 +23,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         public StaffOnlyCommandsModule()
         {
             _enUs = new CultureInfo("en-US");
-            _est = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            _est = TimeZoneInfo.FindSystemTimeZoneById(Program.Config.EstTimeZoneString);
         }
         
         #region Member Applications
@@ -49,7 +49,16 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 var users = Context.Guild.Users;
                 var polychatChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.Polychat));
                 var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.MemberApps));
-                var memberRole = roles.First(role => role.Name.Contains($"[{serverPrefix.ToUpper()}]"));
+
+                var memberRole = roles.FirstOrDefault(role => role.Name.Contains($"[{serverPrefix.ToUpper()}]"));
+
+                if (memberRole is null)
+                {
+                    await Context.Channel.SendMessageAsync($":x: Prefix `{serverPrefix}` does not exist.");
+                    
+                    return;
+                }
+                
                 var userToPromote = users.First(user => user.Id.Equals(app.AuthorDiscordId));
 
                 await userToPromote.AddRoleAsync(memberRole);
