@@ -4,7 +4,7 @@
 [![Framework](https://img.shields.io/badge/framework-.NET%20Core%202.2-blueviolet)](https://dotnet.microsoft.com/download)
 [![Build Status](https://travis-ci.org/ModdedMinecraftClub/mmcc-member-bot.svg?branch=master)](https://travis-ci.org/ModdedMinecraftClub/mmcc-member-bot)
 
-A Discord bot for managing MMCC Member Applications.
+A Discord bot for managing MMCC Member Applications, VIP memberships and reminders.
 
 ## Commands
 **Commands for everyone**
