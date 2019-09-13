@@ -7,8 +7,6 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Jobs.Models
         private DateTime _dateTime;
         public int Id { get; set; }
         public string InvocationData { get; set; }
-        public string Arguments { get; set; }
-
         public DateTime CreatedAt
         {
             get => _dateTime;

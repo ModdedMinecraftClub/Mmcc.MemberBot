@@ -16,6 +16,18 @@ A Discord bot for managing MMCC Member Applications.
 **Staff-only commands**
 - `approve <application id> <server prefix> <ign>` approve a particular application
 - `reject <application id>` reject a particular application
+- `vip <ign> <user>` gives vip to a user and schedules a job
+- `remind <who> "<when>" <what>` create a reminder
+
+        when formats:
+            - MM/dd/yyyy hh:ss tt
+            - in x s/m/d (s = seconds; m = minutes; d = days)
+
+        when has to be in double quotes as shown above!
+- `jobs scheduled` lists scheduled Hangfire jobs
+- `jobs completed` or `jobs succeeded` lists completed Hangfire jobs
+- `jobs failed` lists failed Hangfire jobs
+- `deletejob <id>` delete a scheduled hangfire job
 
 ## Dependencies
 - [ModdedMinecraftClub/polychat](https://github.com/ModdedMinecraftClub/polychat)

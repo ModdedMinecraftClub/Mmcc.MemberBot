@@ -24,7 +24,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         List<Application> GetLast20Approved();
         List<Application> GetLast20Rejected();
         Application GetById(int applicationId);
-        void MarkAsApproved(int applicationId, string prefix);
+        void MarkAsApproved(int applicationId);
         void MarkAsRejected(int applicationId);
 
         #endregion
@@ -61,7 +61,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         public void CreateTable()
         {
             const string sql =
-                "create table applications\n(\n\tAppId int not null auto_increment,\n\tAppStatus int not null,\n\tAppTime varchar(50) null,\n\tAuthorName varchar(50) not null,\n\tAuthorDiscordId long not null,\n\tMessageContent varchar(800) null,\n    MessageUrl varchar(250) not null,\n\tImageUrl varchar(250) null,\n\tPrefix varchar(5) null,\n\tprimary key (AppId)\n);";
+                "create table applications (\n\tAppId int not null auto_increment,\n\tAppStatus int not null,\n\tAppTime varchar(50) null,\n\tAuthorName varchar(50) not null,\n\tAuthorDiscordId long not null,\n\tMessageContent varchar(800) null,\n    MessageUrl varchar(250) not null,\n\tImageUrl varchar(250) null,\n\tprimary key (AppId)\n);";
 
             _connection.Execute(sql);
         }
@@ -73,7 +73,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         public void InsertNewApplication(Application application)
         {
             const string sql =
-                "insert into applications (AppStatus, AppTime, AuthorName, AuthorDiscordId, MessageContent, MessageUrl, ImageUrl) values (@AppStatus, @AppTime, @AuthorName, @AuthorDiscordId, @MessageContent, @MessageUrl, @ImageUrl)";
+                "INSERT INTO applications (AppStatus, AppTime, AuthorName, AuthorDiscordId, MessageContent, MessageUrl, ImageUrl) VALUES (@AppStatus, @AppTime, @AuthorName, @AuthorDiscordId, @MessageContent, @MessageUrl, @ImageUrl)";
 
             _connection.Execute(sql, application);
         }
@@ -81,7 +81,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         public List<Application> GetAllPending()
         {
             const string sql =
-                "select * from applications where AppStatus = 0 order by AppId";
+                "SELECT * FROM applications WHERE AppStatus = 0 ORDER BY AppId";
 
             return _connection.Query<Application>(sql).ToList();
         }
@@ -89,7 +89,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         public List<Application> GetLast20Approved()
         {
             const string sql =
-                "select * from applications where AppStatus = 1 order by AppId limit 20";
+                "SELECT * FROM applications WHERE AppStatus = 1 ORDER BY AppId LIMIT 20";
             
             return _connection.Query<Application>(sql).ToList();
         }
@@ -97,7 +97,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         public List<Application> GetLast20Rejected()
         {
             const string sql =
-                "select * from applications where AppStatus = 2 order by AppId limit 20";
+                "SELECT * FROM applications WHERE AppStatus = 2 ORDER BY AppId LIMIT 20";
             
             return _connection.Query<Application>(sql).ToList();
         }
@@ -105,29 +105,28 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         public Application GetById(int applicationId)
         {
             const string sql =
-                "select * from applications where AppId = @AppId";
+                "SELECT * FROM applications WHERE AppId = @AppId";
             
             var l = _connection.Query<Application>(sql, new { AppId = applicationId }).ToList();
 
             return !l.Any() ? null : l[0];
         }
 
-        public void MarkAsApproved(int applicationId, string prefix)
+        public void MarkAsApproved(int applicationId)
         {
             const string sql =
-                "update applications set AppStatus = 1, Prefix = @Prefix where AppId = @AppId";
+                "UPDATE applications SET AppStatus = 1 WHERE AppId = @AppId";
 
             _connection.Execute(sql, new
             {
-                AppId = applicationId,
-                Prefix = prefix
+                AppId = applicationId
             });
         }
 
         public void MarkAsRejected(int applicationId)
         {
             const string sql =
-                "update applications set AppStatus = 2 where AppId = @AppId";
+                "UPDATE applications SET AppStatus = 2 WHERE AppId = @AppId";
 
             _connection.Execute(sql, new { AppId = applicationId });
         }
@@ -139,7 +138,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         public IEnumerable<JobDto> GetJobs(JobStatus jobStatus)
         {
             const string sql =
-                "SELECT hangfire_job.Id, hangfire_job.InvocationData, hangfire_job.Arguments,\n       hangfire_job.CreatedAt, hangfire_state.Data\nFROM hangfire_job, hangfire_state\nWHERE hangfire_job.StateName LIKE CONCAT('%', @Status, '%')\nAND hangfire_job.Id = hangfire_state.JobId\nAND hangfire_job.StateName = hangfire_state.Name;";
+                "SELECT hangfire_job.Id, hangfire_job.InvocationData, hangfire_job.CreatedAt, hangfire_state.Data FROM hangfire_job, hangfire_state WHERE hangfire_job.StateName LIKE CONCAT('%', @Status, '%') AND hangfire_job.Id = hangfire_state.JobId AND hangfire_job.StateName = hangfire_state.Name;";
 
             return _connection.Query<JobDto>(sql, new { Status = jobStatus.ToString() });
         }
