@@ -19,7 +19,7 @@ A Discord bot for managing MMCC Member Applications, VIP memberships and reminde
 - `vip <ign> <user>` gives vip to a user and schedules a job
 - `remind <who> "<when>" <what>` create a reminder
 
-        when formats:
+        <when> formats:
             - MM/dd/yyyy hh:ss tt
             - in x s/m/d (s = seconds; m = minutes; d = days)
 
