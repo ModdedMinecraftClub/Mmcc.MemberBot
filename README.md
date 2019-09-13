@@ -4,7 +4,7 @@
 [![Framework](https://img.shields.io/badge/framework-.NET%20Core%202.2-blueviolet)](https://dotnet.microsoft.com/download)
 [![Build Status](https://travis-ci.org/ModdedMinecraftClub/mmcc-member-bot.svg?branch=master)](https://travis-ci.org/ModdedMinecraftClub/mmcc-member-bot)
 
-A Discord bot for managing MMCC Member Applications.
+A Discord bot for managing MMCC Member Applications, VIP memberships and reminders.
 
 ## Commands
 **Commands for everyone**
@@ -19,7 +19,7 @@ A Discord bot for managing MMCC Member Applications.
 - `vip <ign> <user>` gives vip to a user and schedules a job
 - `remind <who> "<when>" <what>` create a reminder
 
-        when formats:
+        <when> formats:
             - MM/dd/yyyy hh:ss tt
             - in x s/m/d (s = seconds; m = minutes; d = days)
 
