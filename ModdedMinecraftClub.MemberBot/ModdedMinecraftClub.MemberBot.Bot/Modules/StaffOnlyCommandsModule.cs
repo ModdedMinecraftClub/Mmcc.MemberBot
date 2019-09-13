@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using ConsoleTables;
@@ -16,6 +17,15 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public class StaffOnlyCommandsModule : ModuleBase<SocketCommandContext>
     {
+        private readonly CultureInfo _enUs;
+        private readonly TimeZoneInfo _est;
+
+        public StaffOnlyCommandsModule()
+        {
+            _enUs = new CultureInfo("en-US");
+            _est = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+        }
+        
         #region Member Applications
         
         [Command("approve", RunMode = RunMode.Async)]
@@ -37,8 +47,8 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 var channels = Context.Guild.TextChannels;
                 var roles = Context.Guild.Roles;
                 var users = Context.Guild.Users;
-                var polychatChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.PolychatInteractionChannel));
-                var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.MemberAppsChannelName));
+                var polychatChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.Polychat));
+                var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.MemberApps));
                 var memberRole = roles.First(role => role.Name.Contains($"[{serverPrefix.ToUpper()}]"));
                 var userToPromote = users.First(user => user.Id.Equals(app.AuthorDiscordId));
 
@@ -46,7 +56,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 
                 await polychatChannel.SendMessageAsync($"!promote {serverPrefix} {ign}");
                 
-                c.MarkAsApproved(applicationId, serverPrefix);
+                c.MarkAsApproved(applicationId);
 
                 await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}> Congratulations, your application has been approved.");
                 
@@ -70,7 +80,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 }
                 
                 var channels = Context.Guild.TextChannels;
-                var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.MemberAppsChannelName));
+                var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.MemberApps));
                 
                 c.MarkAsRejected(applicationId);
                 
@@ -90,8 +100,6 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         {
             arg = arg.ToLower();
             
-            var easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-            
             if (arg.Equals(JobStatus.Scheduled.ToString().ToLower()))
             {
                 using (var c = new DatabaseConnection())
@@ -110,8 +118,8 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                     foreach (var job in jobs)
                     {
                         table.AddRow(job.Id, job.Method,
-                            $"{TimeZoneInfo.ConvertTimeFromUtc(job.CreatedAt, easternZone)} EST",
-                            $"{TimeZoneInfo.ConvertTimeFromUtc(job.EnqueueAt, easternZone)} EST");
+                            $"{TimeZoneInfo.ConvertTimeFromUtc(job.CreatedAt, _est).ToString(_enUs)} EST",
+                            $"{TimeZoneInfo.ConvertTimeFromUtc(job.EnqueueAt, _est).ToString(_enUs)} EST");
                     }
 
                     await Context.Channel.SendMessageAsync($"```json\n{table.ToMinimalString()}\n```");
@@ -135,8 +143,8 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                     foreach (var job in jobs)
                     {
                         table.AddRow(job.Id, job.Method,
-                            $"{TimeZoneInfo.ConvertTimeFromUtc(job.CreatedAt, easternZone)} EST",
-                            $"{TimeZoneInfo.ConvertTimeFromUtc(job.SucceededAt, easternZone)} EST");
+                            $"{TimeZoneInfo.ConvertTimeFromUtc(job.CreatedAt, _est).ToString(_enUs)} EST",
+                            $"{TimeZoneInfo.ConvertTimeFromUtc(job.SucceededAt, _est).ToString(_enUs)} EST");
                     }
 
                     await Context.Channel.SendMessageAsync($"```json\n{table.ToMinimalString()}\n```");
@@ -160,7 +168,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                     foreach (var job in jobs)
                     {
                         table.AddRow(job.Id, job.Method,
-                            $"{TimeZoneInfo.ConvertTimeFromUtc(job.CreatedAt, easternZone)} EST");
+                            $"{TimeZoneInfo.ConvertTimeFromUtc(job.CreatedAt, _est).ToString(_enUs)} EST");
                     }
 
                     await Context.Channel.SendMessageAsync($"```json\n{table.ToMinimalString()}\n```");
@@ -186,7 +194,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         public async Task Vip(string ign, SocketGuildUser guildUser)
         {
             var channels = Context.Guild.TextChannels;
-            var polychatChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.PolychatInteractionChannel));
+            var polychatChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.Polychat));
             
             // Give VIP on all servers
             await polychatChannel.SendMessageAsync($"!exec <all> ranks set {ign} vip");
@@ -206,6 +214,113 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
             await Context.Channel.SendMessageAsync($":white_check_mark: Gave VIP to {ign} and scheduled a VIP job for next month.");
         }
         
+        #endregion
+
+        #region Reminders
+        
+        [Command("remind", RunMode = RunMode.Async)]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        [Priority(1)]
+        public async Task Remind(SocketGuildUser whoUser, string estDateTime, [Remainder]string content)
+        {
+            if (!Context.Channel.Name.Equals(Program.Config.Discord.ChannelNames.Reminders))
+            {
+                return;
+            }
+            
+            if (estDateTime.Contains("in") && !(estDateTime.Contains("/")))
+            {
+                var dates = GetInDates(estDateTime);
+                
+                BackgroundJob.Schedule(() => ReminderJob.ExecuteUser(Context.Guild.Id, Context.Channel.Id, whoUser.Id, content), dates.UtcTime);
+
+                await Context.Channel.SendMessageAsync($":white_check_mark: Created a reminder for <@{whoUser.Id}> for `{dates.EstTime.ToString(_enUs)} EST` (`{dates.UtcTime.ToString(_enUs)} UTC`).");
+
+                return;
+            }
+            
+            // exampleDateString = "05/09/2017 05:05 AM";
+            const string format = "MM/dd/yyyy HH:mm tt";
+            var parsedEstDate = DateTime.ParseExact(estDateTime, format, _enUs);
+            var utcDate = TimeZoneInfo.ConvertTimeToUtc(parsedEstDate, _est);
+
+            BackgroundJob.Schedule(() => ReminderJob.ExecuteUser(Context.Guild.Id, Context.Channel.Id, whoUser.Id, content), utcDate);
+
+            await Context.Channel.SendMessageAsync($":white_check_mark: Created a reminder for <@{whoUser.Id}> for `{parsedEstDate.ToString(_enUs)} EST` (`{utcDate.ToString(_enUs)} UTC`).");
+        }
+        
+        [Command("remind", RunMode = RunMode.Async)]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        [Priority(0)]
+        public async Task Remind(SocketRole whoRole, string estDateTime, [Remainder]string content)
+        {
+            if (!Context.Channel.Name.Equals(Program.Config.Discord.ChannelNames.Reminders))
+            {
+                return;
+            }
+            
+            if (estDateTime.Contains("in") && !(estDateTime.Contains("/")))
+            {
+                var dates = GetInDates(estDateTime);
+                
+                BackgroundJob.Schedule(() => ReminderJob.ExecuteRole(Context.Guild.Id, Context.Channel.Id, whoRole.Id, content), dates.UtcTime);
+
+                await Context.Channel.SendMessageAsync($":white_check_mark: Created a reminder for {whoRole.Mention} for `{dates.EstTime.ToString(_enUs)} EST` (`{dates.UtcTime.ToString(_enUs)} UTC`).");
+
+                return;
+            }
+            
+            // exampleDateString = "05/09/2017 05:05 AM";
+            const string format = "MM/dd/yyyy HH:mm tt";
+            var parsedEstDate = DateTime.ParseExact(estDateTime, format, _enUs);
+            var utcDate = TimeZoneInfo.ConvertTimeToUtc(parsedEstDate, _est);
+
+            BackgroundJob.Schedule(() => ReminderJob.ExecuteRole(Context.Guild.Id, Context.Channel.Id, whoRole.Id, content), utcDate);
+
+            await Context.Channel.SendMessageAsync($":white_check_mark: Created a reminder for {whoRole.Mention} for `{parsedEstDate.ToString(_enUs)} EST` (`{utcDate.ToString(_enUs)} UTC`).");
+        }
+
+        private Dates GetInDates(string estDateTime)
+        {
+            var t = estDateTime[estDateTime.Length - 1];
+            estDateTime = estDateTime.Remove(0, estDateTime.IndexOf(' ') + 1);
+            estDateTime = estDateTime.Remove(estDateTime.Length - 1);
+            var parsed = int.Parse(estDateTime);
+            var now = DateTime.UtcNow;
+            DateTime time;
+                
+            if (t.Equals('s'))
+            {
+                time = now.AddSeconds(parsed);
+            }
+            else if (t.Equals('m'))
+            {
+                time = now.AddMinutes(parsed);
+            }
+            else if (t.Equals('d'))
+            {
+                time = now.AddDays(parsed);
+            }
+            else
+            {
+                throw new ArgumentException("Illegal argument.");
+            }
+
+            var timeEst = TimeZoneInfo.ConvertTimeFromUtc(time, _est);
+
+            return new Dates
+            {
+                UtcTime = time,
+                EstTime = timeEst
+            };
+        }
+
+        private class Dates
+        {
+            public DateTime UtcTime { get; set; }
+            public DateTime EstTime { get; set; }
+        }
+
         #endregion
     }
 }

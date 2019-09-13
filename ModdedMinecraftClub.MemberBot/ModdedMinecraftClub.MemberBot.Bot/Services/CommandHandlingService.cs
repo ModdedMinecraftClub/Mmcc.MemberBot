@@ -47,7 +47,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services
             // offset where the prefix ends
             var argPos = 0;
 
-            if (message.Channel.Name.Equals(Program.Config.Discord.MemberAppsChannelName) && message.Attachments.Count != 0)
+            if (message.Channel.Name.Equals(Program.Config.Discord.ChannelNames.MemberApps) && message.Attachments.Count != 0)
             {
                 var channel = message.Channel;
                 
@@ -95,7 +95,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services
             }
 
             // what to do if the command failed
-            await context.Channel.SendMessageAsync($"error: {result}");
+            await context.Channel.SendMessageAsync($":x: error: {result}");
         }
     }
 }

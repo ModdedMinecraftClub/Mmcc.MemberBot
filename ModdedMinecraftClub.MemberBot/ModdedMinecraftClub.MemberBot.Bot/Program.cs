@@ -9,7 +9,6 @@ using Hangfire;
 using Hangfire.MySql.Core;
 using ModdedMinecraftClub.MemberBot.Bot.ConfigModels;
 using ModdedMinecraftClub.MemberBot.Bot.Services;
-using Newtonsoft.Json;
 
 namespace ModdedMinecraftClub.MemberBot.Bot
 {

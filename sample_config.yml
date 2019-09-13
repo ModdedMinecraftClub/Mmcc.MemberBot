@@ -10,11 +10,12 @@ discord:
   # prefix for commands (e.g. <prefix>pending (e.g. !pending))
   prefix: ""
   # discord bot token (obtainable at discordapp.com/developers)
-  token: ""
-  # put the name of the channel without '#'
-  # the name of the channel with the player apps (e.g. "#member-apps") (not the staff spam channel)  
-  memberAppsChannelName: ""
-  # the name of the channel to which member-bot will send polychat commands
-  polychatInteractionChannel: ""
-# e.g. "pl-PL", "en-US"
-dateCulture: ""
+  token: "" 
+  channelNames:
+    # put in all channel names without '#'
+    # the name of the channel with the player apps (e.g. #member-apps) (not the staff spam channel)
+    memberApps: ""
+    # the name of the channel to which member-bot will send polychat commands
+    polychat: ""
+    # the name of the channel for reminders
+    reminders: ""

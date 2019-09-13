@@ -18,7 +18,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Jobs
             await user.RemoveRoleAsync(vipRole);
             
             // Set appropriate rank on each server
-            var polychatChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.PolychatInteractionChannel));
+            var polychatChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.Polychat));
 
             await polychatChannel.SendMessageAsync($"!exec <all> ranks set {ign} guest");
             
@@ -30,7 +30,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Jobs
             }
             
             // Send info messages
-            var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.MemberAppsChannelName));
+            var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.MemberApps));
             var serverRoles = guild.Roles;
             var staffRole = serverRoles.First(r => r.Name.Equals("Staff"));
             
