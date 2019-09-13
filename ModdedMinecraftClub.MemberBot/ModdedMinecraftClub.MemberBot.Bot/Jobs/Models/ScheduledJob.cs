@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using System;
 
-namespace ModdedMinecraftClub.MemberBot.Bot
+namespace ModdedMinecraftClub.MemberBot.Bot.Jobs.Models
 {
     public class ScheduledJob : Job
     {
-        public string EnqueueAt { get; set; }
+        public DateTime EnqueueAt { get; private set; }
         
         public ScheduledJob(JobDto dto) : base(dto)
         {
         }
         
-        public void Parse()
+        public override void Parse()
         {
             ParseBasics();
 

@@ -1,4 +1,4 @@
-﻿namespace ModdedMinecraftClub.MemberBot.Bot
+﻿namespace ModdedMinecraftClub.MemberBot.Bot.Jobs.Models
 {
     public enum JobStatus
     {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dapper;
+using ModdedMinecraftClub.MemberBot.Bot.Jobs;
+using ModdedMinecraftClub.MemberBot.Bot.Jobs.Models;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 
