@@ -32,7 +32,8 @@ A Discord bot for managing MMCC Member Applications, VIP memberships and reminde
 ## Dependencies
 - [ModdedMinecraftClub/polychat](https://github.com/ModdedMinecraftClub/polychat)
 - [ModdedMinecraftClub/polychat-client](https://github.com/ModdedMinecraftClub/polychat)
-- [.NET Core SDK](https://dotnet.microsoft.com/download)
+- [.NET Core SDK >=2.2](https://dotnet.microsoft.com/download)
+- [MySQL >=8.0](https://www.mysql.com/)
 
 ## Installation
 1. Deploy [polychat](https://github.com/ModdedMinecraftClub/polychat) and [polychat-client](https://github.com/ModdedMinecraftClub/polychat-client).
