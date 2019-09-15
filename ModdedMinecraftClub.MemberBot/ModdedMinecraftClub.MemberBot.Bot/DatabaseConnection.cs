@@ -138,7 +138,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         public IEnumerable<JobDto> GetJobs(JobStatus jobStatus)
         {
             const string sql =
-                "SELECT hangfire_job.Id, hangfire_job.InvocationData, hangfire_job.CreatedAt, hangfire_state.Data FROM hangfire_job, hangfire_state WHERE hangfire_job.StateName LIKE CONCAT('%', @Status, '%') AND hangfire_job.Id = hangfire_state.JobId AND hangfire_job.StateName = hangfire_state.Name;";
+                "SELECT Hangfire_Job.Id, Hangfire_Job.InvocationData, Hangfire_Job.CreatedAt, Hangfire_State.Data FROM Hangfire_Job, Hangfire_State WHERE Hangfire_Job.StateName LIKE CONCAT('%', @Status, '%') AND Hangfire_Job.Id = Hangfire_State.JobId AND Hangfire_Job.StateName = Hangfire_State.Name;";
 
             return _connection.Query<JobDto>(sql, new { Status = jobStatus.ToString() });
         }
