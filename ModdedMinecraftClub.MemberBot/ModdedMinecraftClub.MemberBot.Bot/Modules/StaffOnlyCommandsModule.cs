@@ -29,6 +29,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         #region Member Applications
         
         [Command("approve", RunMode = RunMode.Async)]
+        [Priority(1)]
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task Approve(int applicationId, string serverPrefix, string ign)
         {
@@ -59,8 +60,15 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                     return;
                 }
                 
-                var userToPromote = users.First(user => user.Id == app.AuthorDiscordId);
+                var userToPromote = users.FirstOrDefault(user => user.Id == app.AuthorDiscordId);
 
+                if (userToPromote is null)
+                {
+                    await Context.Channel.SendMessageAsync($":x: Cannot find a user with ID `{app.AuthorDiscordId}`. Promote manually or reject the application.");
+
+                    return;
+                }
+                
                 await userToPromote.AddRoleAsync(memberRole);
                 
                 await polychatChannel.SendMessageAsync($"!promote {serverPrefix} {ign}");
@@ -98,7 +106,26 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 await Context.Channel.SendMessageAsync($":white_check_mark: **Rejected** application with ID `{applicationId}`");
             }
         }
-        
+
+        [Command("approve", RunMode = RunMode.Async)]
+        [Priority(-1)]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        public async Task Approve(int applicationId, string arg)
+        {
+            if (arg.Equals("manual"))
+            {
+                using (var c = new DatabaseConnection())
+                {
+                    c.MarkAsApproved(applicationId);
+                }
+                
+                await Context.Channel.SendMessageAsync($":white_check_mark: **Marked** application with ID `{applicationId}` as approved but the player still has to be promoted manually.");
+            } else
+            {
+                await Context.Channel.SendMessageAsync($":x: Argument {arg} not recognized.");
+            }
+        }
+
         #endregion
 
         #region Hangfire
