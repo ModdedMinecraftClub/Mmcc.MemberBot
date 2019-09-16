@@ -81,6 +81,25 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
             }
         }
         
+        [Command("approve", RunMode = RunMode.Async)]
+        [Priority(-1)]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        public async Task Approve(int applicationId, string arg)
+        {
+            if (arg.Equals("manual"))
+            {
+                using (var c = new DatabaseConnection())
+                {
+                    c.MarkAsApproved(applicationId);
+                }
+                
+                await Context.Channel.SendMessageAsync($":white_check_mark: **Marked** application with ID `{applicationId}` as approved but the player still has to be promoted manually.\nRemember to let the player know once you have promoted them manually.");
+            } else
+            {
+                await Context.Channel.SendMessageAsync($":x: Argument {arg} not recognized.");
+            }
+        }
+        
         [Command("reject", RunMode = RunMode.Async)]
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task Reject(int applicationId)
@@ -106,26 +125,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 await Context.Channel.SendMessageAsync($":white_check_mark: **Rejected** application with ID `{applicationId}`");
             }
         }
-
-        [Command("approve", RunMode = RunMode.Async)]
-        [Priority(-1)]
-        [RequireUserPermission(GuildPermission.BanMembers)]
-        public async Task Approve(int applicationId, string arg)
-        {
-            if (arg.Equals("manual"))
-            {
-                using (var c = new DatabaseConnection())
-                {
-                    c.MarkAsApproved(applicationId);
-                }
-                
-                await Context.Channel.SendMessageAsync($":white_check_mark: **Marked** application with ID `{applicationId}` as approved but the player still has to be promoted manually.");
-            } else
-            {
-                await Context.Channel.SendMessageAsync($":x: Argument {arg} not recognized.");
-            }
-        }
-
+        
         #endregion
 
         #region Hangfire
