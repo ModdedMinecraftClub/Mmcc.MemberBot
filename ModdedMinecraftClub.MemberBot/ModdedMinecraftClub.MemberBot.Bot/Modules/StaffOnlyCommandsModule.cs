@@ -102,7 +102,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         
         [Command("reject", RunMode = RunMode.Async)]
         [RequireUserPermission(GuildPermission.BanMembers)]
-        public async Task Reject(int applicationId)
+        public async Task Reject(int applicationId, [Remainder]string reason)
         {
             using (var c = new DatabaseConnection())
             {
@@ -120,7 +120,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 
                 c.MarkAsRejected(applicationId);
                 
-                await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}> Unfortunately, your application has been rejected.");
+                await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}> Unfortunately, your application has been rejected.\nReason:\n```{reason}```");
                 
                 await Context.Channel.SendMessageAsync($":white_check_mark: **Rejected** application with ID `{applicationId}`");
             }
