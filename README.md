@@ -15,6 +15,7 @@ A Discord bot for managing MMCC Member Applications, VIP memberships and reminde
 
 **Staff-only commands**
 - `approve <application id> <server prefix> <ign>` approve a particular application
+- `approve <application id> manual` force mark an application as approved (player will not be promoted automatically, you will have to promote them manually
 - `reject <application id>` reject a particular application
 - `vip <ign> <user>` gives vip to a user and schedules a job
 - `remind <who> "<when>" <what>` create a reminder
