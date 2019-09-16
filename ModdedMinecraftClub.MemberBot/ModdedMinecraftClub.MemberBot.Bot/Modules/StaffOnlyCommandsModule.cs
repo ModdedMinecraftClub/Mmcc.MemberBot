@@ -59,7 +59,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                     return;
                 }
                 
-                var userToPromote = users.First(user => user.Id.Equals(app.AuthorDiscordId));
+                var userToPromote = users.First(user => user.Id == app.AuthorDiscordId);
 
                 await userToPromote.AddRoleAsync(memberRole);
                 
