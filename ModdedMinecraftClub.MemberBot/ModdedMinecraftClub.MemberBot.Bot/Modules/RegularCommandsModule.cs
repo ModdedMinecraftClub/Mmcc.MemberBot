@@ -92,7 +92,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 
                 var b = new EmbedBuilder();
                 b.AddField($"{app.AppStatus.ToString().ToUpper()}: Application by {app.AuthorName}", $"Author's Discord ID: {app.AuthorDiscordId}\nApplication ID: {app.AppId}");
-                b.AddField("Provided details", app.MessageContent);
+                b.AddField("Provided details", app.MessageContent ?? "*No details provided*");
                 b.AddField("Link to original message", app.MessageUrl);
                 b.WithThumbnailUrl(app.ImageUrl);
                 b.WithFooter($"Applied at {app.AppTime}");
