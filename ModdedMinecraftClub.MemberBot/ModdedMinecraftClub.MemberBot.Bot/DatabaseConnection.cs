@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dapper;
+using ModdedMinecraftClub.MemberBot.Bot.Models;
 using MySql.Data.MySqlClient;
 
 namespace ModdedMinecraftClub.MemberBot.Bot

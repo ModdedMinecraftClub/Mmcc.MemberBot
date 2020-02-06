@@ -23,18 +23,16 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             
             StartupChecks();
 
-            using (var services = ConfigureServices())
-            {
-                var client = services.GetRequiredService<DiscordSocketClient>();
+            using var services = ConfigureServices();
+            var client = services.GetRequiredService<DiscordSocketClient>();
 
-                client.Log += LogAsync;
-                services.GetRequiredService<CommandService>().Log += LogAsync;
+            client.Log += LogAsync;
+            services.GetRequiredService<CommandService>().Log += LogAsync;
                 
-                await client.LoginAsync(TokenType.Bot, Config.Discord.Token);
-                await client.StartAsync();
-                await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
-                await Task.Delay(-1);
-            }
+            await client.LoginAsync(TokenType.Bot, Config.Discord.Token);
+            await client.StartAsync();
+            await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
+            await Task.Delay(-1);
         }
 
         private static Task LogAsync(LogMessage log)
