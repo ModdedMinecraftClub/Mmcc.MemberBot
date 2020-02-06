@@ -4,7 +4,7 @@
 [![Framework](https://img.shields.io/badge/framework-.NET%20Core%203.1-blueviolet?style=flat-square)](https://dotnet.microsoft.com/download)
 [![Build Status](https://img.shields.io/travis/ModdedMinecraftClub/mmcc-member-bot?style=flat-square)](https://travis-ci.org/ModdedMinecraftClub/mmcc-member-bot)
 
-A Discord bot for managing MMCC Member Applications, VIP memberships and reminders.
+A Discord bot for managing MMCC Member Applications.
 
 ## Commands
 **Commands for everyone**
@@ -17,18 +17,6 @@ A Discord bot for managing MMCC Member Applications, VIP memberships and reminde
 - `approve <application id> <server prefix> <ign>` approve a particular application
 - `approve <application id> manual` force mark an application as approved (player will not be promoted automatically, you will have to promote them manually but the application will be marked as approved and will be removed from the pending list)
 - `reject <application id>` reject a particular application
-- `vip <ign> <user>` gives vip to a user and schedules a job
-- `remind <who> "<when>" <what>` create a reminder
-
-        <when> formats:
-            - MM/dd/yyyy hh:ss tt
-            - in x s/m/d (s = seconds; m = minutes; d = days)
-
-        when has to be in double quotes as shown above!
-- `jobs scheduled` lists scheduled Hangfire jobs
-- `jobs completed` or `jobs succeeded` lists completed Hangfire jobs
-- `jobs failed` lists failed Hangfire jobs
-- `deletejob <id>` delete a scheduled hangfire job
 
 ## Dependencies
 - [ModdedMinecraftClub/polychat](https://github.com/ModdedMinecraftClub/polychat)
