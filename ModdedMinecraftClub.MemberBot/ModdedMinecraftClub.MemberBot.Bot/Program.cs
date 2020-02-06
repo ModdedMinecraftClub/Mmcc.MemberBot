@@ -5,53 +5,34 @@ using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using Hangfire;
-using Hangfire.MySql.Core;
-using ModdedMinecraftClub.MemberBot.Bot.ConfigModels;
+using ModdedMinecraftClub.MemberBot.Bot.Models;
 using ModdedMinecraftClub.MemberBot.Bot.Services;
 
 namespace ModdedMinecraftClub.MemberBot.Bot
 {
-    class Program
+    internal class Program
     {
-        private BackgroundJobServer _server;
         internal static readonly ConfigRoot Config = Yaml.GetConfig();
-        
-        internal static DiscordSocketClient Client { get; private set; }
 
         private static async Task Main()
             => await new Program().MainAsync();
 
         private async Task MainAsync()
         {
-            Console.WriteLine("Starting ModdedMinecraftClub.MemberBot.Bot...\n");
+            Console.WriteLine("Starting the bot...\n");
             
             StartupChecks();
 
             using (var services = ConfigureServices())
             {
-                Client = services.GetRequiredService<DiscordSocketClient>();
+                var client = services.GetRequiredService<DiscordSocketClient>();
 
-                Client.Log += LogAsync;
+                client.Log += LogAsync;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
-                await Client.LoginAsync(TokenType.Bot, Config.Discord.Token);
-                await Client.StartAsync();
                 
+                await client.LoginAsync(TokenType.Bot, Config.Discord.Token);
+                await client.StartAsync();
                 await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
-                
-                Client.Ready += () =>
-                {
-                    GlobalConfiguration.Configuration
-                        .UseColouredConsoleLogProvider()
-                        .UseSimpleAssemblyNameTypeSerializer()
-                        .UseRecommendedSerializerSettings()
-                        .UseStorage(new MySqlStorage(Helper.GetMySqlConnectionString()));
-
-                    _server = new BackgroundJobServer();
-                    
-                    return Task.CompletedTask;
-                };
-
                 await Task.Delay(-1);
             }
         }

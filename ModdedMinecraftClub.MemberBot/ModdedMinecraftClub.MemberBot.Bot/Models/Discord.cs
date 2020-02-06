@@ -1,4 +1,4 @@
-﻿namespace ModdedMinecraftClub.MemberBot.Bot.ConfigModels
+﻿namespace ModdedMinecraftClub.MemberBot.Bot.Models
 {
     public class Discord
     {

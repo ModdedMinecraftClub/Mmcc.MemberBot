@@ -2,41 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dapper;
-using ModdedMinecraftClub.MemberBot.Bot.Jobs;
-using ModdedMinecraftClub.MemberBot.Bot.Jobs.Models;
 using MySql.Data.MySqlClient;
-using Newtonsoft.Json;
 
 namespace ModdedMinecraftClub.MemberBot.Bot
 {
-    public interface IDatabaseConnection
-    {
-        #region Startup Checks
-
-        bool DoesTableExist();
-        void CreateTable();
-
-        #endregion
-
-        #region Member Applications
-
-        List<Application> GetAllPending();
-        List<Application> GetLast20Approved();
-        List<Application> GetLast20Rejected();
-        Application GetById(int applicationId);
-        void MarkAsApproved(int applicationId);
-        void MarkAsRejected(int applicationId);
-
-        #endregion
-
-        #region Hangfire
-
-        IEnumerable<JobDto> GetJobs(JobStatus jobStatus);
-
-        #endregion
-    }
-    
-    public class DatabaseConnection : IDisposable, IDatabaseConnection
+    public class DatabaseConnection : IDisposable
     {
         private readonly MySqlConnection _connection;
 
@@ -132,18 +102,6 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         }
         
         #endregion Member Applications
-
-        #region Hangfire
-
-        public IEnumerable<JobDto> GetJobs(JobStatus jobStatus)
-        {
-            const string sql =
-                "SELECT Hangfire_Job.Id, Hangfire_Job.InvocationData, Hangfire_Job.CreatedAt, Hangfire_State.Data FROM Hangfire_Job, Hangfire_State WHERE Hangfire_Job.StateName LIKE CONCAT('%', @Status, '%') AND Hangfire_Job.Id = Hangfire_State.JobId AND Hangfire_Job.StateName = Hangfire_State.Name;";
-
-            return _connection.Query<JobDto>(sql, new { Status = jobStatus.ToString() });
-        }
-        
-        #endregion
         
         public void Dispose()
         {

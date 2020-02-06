@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using ModdedMinecraftClub.MemberBot.Bot.ConfigModels;
+using ModdedMinecraftClub.MemberBot.Bot.Models;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
