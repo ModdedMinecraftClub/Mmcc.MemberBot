@@ -1,7 +1,7 @@
 # MMCC Member Bot
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](https://github.com/ModdedMinecraftClub/mmcc-member-bot/blob/master/LICENSE)
 ![OS](https://img.shields.io/badge/platform-linux%20%7C%20windows-orange?style=flat-square)
-[![Framework](https://img.shields.io/badge/framework-.NET%20Core%202.2-blueviolet?style=flat-square)](https://dotnet.microsoft.com/download)
+[![Framework](https://img.shields.io/badge/framework-.NET%20Core%203.1-orange?style=flat-square)](https://dotnet.microsoft.com/download)
 [![Build Status](https://img.shields.io/travis/ModdedMinecraftClub/mmcc-member-bot?style=flat-square)](https://travis-ci.org/ModdedMinecraftClub/mmcc-member-bot)
 
 A Discord bot for managing MMCC Member Applications, VIP memberships and reminders.
