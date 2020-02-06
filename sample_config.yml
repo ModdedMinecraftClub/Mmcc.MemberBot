@@ -17,9 +17,3 @@ discord:
     memberApps: ""
     # the name of the channel to which member-bot will send polychat commands
     polychat: ""
-    # the name of the channel for reminders
-    reminders: ""
-# Name of the EST time zone for your OS
-# Windows: "Eastern Standard Time"
-# Linux: "America/Toronto"
-estTimeZoneString: ""
