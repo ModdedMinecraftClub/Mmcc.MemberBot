@@ -22,7 +22,7 @@ function PrepareDir {
 
 PrepareDir("Bot")
 
-[string]$source = ".\ModdedMinecraftClub.MemberBot\ModdedMinecraftClub.MemberBot.Bot\bin\Release\netcoreapp2.2\publish\*"
+[string]$source = ".\ModdedMinecraftClub.MemberBot\ModdedMinecraftClub.MemberBot.Bot\bin\Release\netcoreapp3.1\publish\*"
 
 [string]$destination = ".\Bot\"
 

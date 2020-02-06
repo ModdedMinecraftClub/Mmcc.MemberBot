@@ -15,6 +15,6 @@ else
     mkdir Bot
 fi
 
-cp -r ModdedMinecraftClub.MemberBot/ModdedMinecraftClub.MemberBot.Bot/bin/Release/netcoreapp2.2/publish/* Bot/
+cp -r ModdedMinecraftClub.MemberBot/ModdedMinecraftClub.MemberBot.Bot/bin/Release/netcoreapp3.1/publish/* Bot/
 
 printf "\n\nDone.\n"
