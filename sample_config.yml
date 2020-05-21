@@ -1,6 +1,6 @@
 mysql:
   # the final connection string looks like this:
-  # Server={serverIp};Port={port};Database={databaseName};Uid=username};Pwd={password}
+  # Server={serverIp};Port={port};Database={databaseName};{Uid=username};Pwd={password}
   serverIp: ""
   port: 0
   databaseName: ""
