@@ -16,7 +16,7 @@ A Discord bot for managing MMCC Member Applications.
 **Staff-only commands**
 - `approve <application id> <server prefix> <ign>` approve a particular application
 - `approve <application id> manual` force mark an application as approved (player will not be promoted automatically, you will have to promote them manually but the application will be marked as approved and will be removed from the pending list)
-- `reject <application id>` reject a particular application
+- `reject <application id> <reason>` reject a particular application
 
 ## Dependencies
 - [ModdedMinecraftClub/polychat](https://github.com/ModdedMinecraftClub/polychat)
