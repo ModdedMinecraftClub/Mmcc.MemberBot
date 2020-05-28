@@ -21,9 +21,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         {
             Config = Helper.LoadConfigFile();
             
-            Console.WriteLine("MMCC Member Bot v4.0\n");
-            
-            StartupChecks();
+            Startup();
 
             await using var services = ConfigureServices();
             var client = services.GetRequiredService<DiscordSocketClient>();
@@ -54,25 +52,32 @@ namespace ModdedMinecraftClub.MemberBot.Bot
                 .BuildServiceProvider();
         }
 
-        private void StartupChecks()
+        private void Startup()
         {
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            
+            Console.WriteLine("MMCC Member Bot v4.0\n");
+            
             using var c = new DatabaseConnection();
+            
             var exists = c.DoesTableExist();
             
-            Console.WriteLine("Checking if \"applications\" table exists...\n");
+            Console.WriteLine($"[{DateTime.Now}] Checking if \"applications\" table exists...\n");
 
             if (!exists)
             {
-                Console.WriteLine("Couldn't find the table. Creating...");
+                Console.WriteLine($"[{DateTime.Now}] Couldn't find the table. Creating...");
                 
                 c.CreateTable();
                 
-                Console.WriteLine("Successfully created the table. Starting the bot...\n");
+                Console.WriteLine($"[{DateTime.Now}] Successfully created the table. Starting the bot...\n");
             }
             else
             {
-                Console.WriteLine("Found the table. Starting the bot...\n");
+                Console.WriteLine($"[{DateTime.Now}] Found the table. Starting the bot...\n");
             }
+            
+            Console.ResetColor();
         }
     }
 }
