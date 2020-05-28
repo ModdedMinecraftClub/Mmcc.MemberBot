@@ -12,23 +12,25 @@ namespace ModdedMinecraftClub.MemberBot.Bot
 {
     internal class Program
     {
-        internal static readonly ConfigRoot Config = Yaml.GetConfig();
+        internal static ConfigRoot Config { get; private set; }
 
         private static async Task Main()
             => await new Program().MainAsync();
 
         private async Task MainAsync()
         {
-            Console.WriteLine("Starting the bot...\n");
+            Config = Helper.LoadConfigFile();
+            
+            Console.WriteLine("MMCC Member Bot v4.0\n");
             
             StartupChecks();
 
-            using var services = ConfigureServices();
+            await using var services = ConfigureServices();
             var client = services.GetRequiredService<DiscordSocketClient>();
 
             client.Log += LogAsync;
             services.GetRequiredService<CommandService>().Log += LogAsync;
-                
+            
             await client.LoginAsync(TokenType.Bot, Config.Discord.Token);
             await client.StartAsync();
             await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
@@ -52,26 +54,24 @@ namespace ModdedMinecraftClub.MemberBot.Bot
                 .BuildServiceProvider();
         }
 
-        private static void StartupChecks()
+        private void StartupChecks()
         {
-            using (var c = new DatabaseConnection())
-            {
-                var exists = c.DoesTableExist();
-                
-                Console.WriteLine("Checking if \"applications\" table exists...\n");
+            using var c = new DatabaseConnection();
+            var exists = c.DoesTableExist();
+            
+            Console.WriteLine("Checking if \"applications\" table exists...\n");
 
-                if (!exists)
-                {
-                    Console.WriteLine("Couldn't find the table. Creating...");
-                    
-                    c.CreateTable();
-                    
-                    Console.WriteLine("Successfully created the table. Starting the bot...\n");
-                }
-                else
-                {
-                    Console.WriteLine("Found the table. Starting the bot...\n");
-                }
+            if (!exists)
+            {
+                Console.WriteLine("Couldn't find the table. Creating...");
+                
+                c.CreateTable();
+                
+                Console.WriteLine("Successfully created the table. Starting the bot...\n");
+            }
+            else
+            {
+                Console.WriteLine("Found the table. Starting the bot...\n");
             }
         }
     }
