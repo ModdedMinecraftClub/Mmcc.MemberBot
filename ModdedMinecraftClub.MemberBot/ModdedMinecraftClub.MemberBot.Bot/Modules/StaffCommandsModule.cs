@@ -53,8 +53,15 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
             await polychatChannel.SendMessageAsync($"!promote {serverPrefix} {ign}");
                 
             c.MarkAsApproved(applicationId);
+            
+            var resultEmbed = new EmbedBuilder();
+            resultEmbed.WithTitle($"Application approved");
+            resultEmbed.WithColor(Color.Green);
+            resultEmbed.WithThumbnailUrl("https://www.moddedminecraft.club/data/icon.png");
+            resultEmbed.WithDescription("Congratulations, your application has been approved.");
+            resultEmbed.AddField("Approved by", Context.Message.Author);
 
-            await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}> Congratulations, your application has been approved.");
+            await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}>", false, resultEmbed.Build());
                 
             await Context.Channel.SendMessageAsync($":white_check_mark: **Approved** application with ID: `{applicationId}`");
         }
@@ -96,9 +103,17 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
             var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.MemberApps));
                 
             c.MarkAsRejected(applicationId);
-                
-            await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}> Unfortunately, your application has been rejected.\nReason:\n```{reason}```");
-                
+            
+            var resultEmbed = new EmbedBuilder();
+            resultEmbed.WithTitle($"Application rejected");
+            resultEmbed.WithColor(Color.Red);
+            resultEmbed.WithDescription("Unfortunately, your application has been rejected.");
+            resultEmbed.WithThumbnailUrl("https://www.moddedminecraft.club/data/icon.png");
+            resultEmbed.AddField("Reason", reason);
+            resultEmbed.AddField("Rejected by", Context.Message.Author);
+
+            await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}>", false, resultEmbed.Build());
+
             await Context.Channel.SendMessageAsync($":white_check_mark: **Rejected** application with ID `{applicationId}`");
         }
     }
