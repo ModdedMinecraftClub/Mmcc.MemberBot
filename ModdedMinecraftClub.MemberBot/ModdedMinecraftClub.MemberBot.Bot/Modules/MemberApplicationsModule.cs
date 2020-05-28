@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -73,6 +74,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         public async Task View(int applicationId)
         {
             using var c = new DatabaseConnection();
+            
             var app = c.GetById(applicationId);
 
             if (app is null)
@@ -81,25 +83,34 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                     
                 return;
             }
-                
+            
             var b = new EmbedBuilder();
             b.AddField($"{app.AppStatus.ToString().ToUpper()}: Application by {app.AuthorName}", $"Author's Discord ID: {app.AuthorDiscordId}\nApplication ID: {app.AppId}");
-            b.AddField("Provided details", app.MessageContent ?? "*No details provided*");
+            
+            if (app.MessageContent is null || app.MessageContent.Equals(""))
+            {
+                b.AddField("Provided details","*Player did not provide any details.*");
+            }
+            else
+            {
+                b.AddField("Provided details", app.MessageContent);
+            }
+
             b.AddField("Link to original message", app.MessageUrl);
             b.WithThumbnailUrl(app.ImageUrl);
             b.WithFooter($"Applied at {app.AppTime}");
                 
-            if (app.AppStatus == ApplicationStatus.Approved)
+            switch (app.AppStatus)
             {
-                b.WithColor(Color.Green);
-            } 
-            else if (app.AppStatus == ApplicationStatus.Rejected)
-            {
-                b.WithColor(Color.Red);
-            }
-            else
-            {
-                b.WithColor(Color.Blue);
+                case ApplicationStatus.Approved:
+                    b.WithColor(Color.Green);
+                    break;
+                case ApplicationStatus.Rejected:
+                    b.WithColor(Color.Red);
+                    break;
+                default:
+                    b.WithColor(Color.Blue);
+                    break;
             }
                 
             await Context.Channel.SendMessageAsync("", false, b.Build());
