@@ -88,10 +88,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             const string sql =
                 "UPDATE applications SET AppStatus = 1 WHERE AppId = @AppId";
 
-            _connection.Execute(sql, new
-            {
-                AppId = applicationId
-            });
+            _connection.Execute(sql, new { AppId = applicationId });
         }
 
         public void MarkAsRejected(int applicationId)

@@ -60,7 +60,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services
                     AuthorDiscordId = message.Author.Id,
                     MessageContent = message.Content,
                     MessageUrl = message.GetJumpUrl(),
-                    ImageUrl = message.Attachments.ToList()[0].Url
+                    ImageUrl = message.Attachments.First().Url
                 };
 
                 using (var c = new DatabaseConnection())
