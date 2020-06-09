@@ -79,8 +79,19 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 await Context.Channel.SendMessageAsync($":x: Argument {arg} not recognized.");
             }
         }
+
+        [Command("approve", RunMode = RunMode.Async)]
+        [Priority(-2)]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        public async Task Approve()
+        {
+            const string s = ":x: Incorrect arguments.\nUsage: `approve <application id> <server prefix> <ign>`\nAlternative usage: `approve <application id> manual`";
+
+            await Context.Channel.SendMessageAsync(s);
+        }
         
         [Command("reject", RunMode = RunMode.Async)]
+        [Priority(1)]
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task Reject(int applicationId, [Remainder]string reason)
         {
@@ -102,6 +113,16 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
 
             await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}>", false, resultEmbed);
             await Context.Channel.SendMessageAsync($":white_check_mark: **Rejected** application with ID `{applicationId}`");
+        }
+
+        [Command("reject", RunMode = RunMode.Async)]
+        [Priority(-1)]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        public async Task Reject()
+        {
+            const string s = ":x: Incorrect arguments.\nUsage: `reject <application id> <reason>`";
+
+            await Context.Channel.SendMessageAsync(s);
         }
         
         /// <summary>

@@ -71,6 +71,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         }
         
         [Command("view", RunMode = RunMode.Async)]
+        [Priority(1)]
         public async Task ViewAsync(int applicationId)
         {
             var app = await _db.GetByIdAsync(applicationId);
@@ -85,6 +86,15 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
             var embed = BuildApplicationEmbed(app);
             
             await Context.Channel.SendMessageAsync("", false, embed);
+        }
+
+        [Command("view", RunMode = RunMode.Async)]
+        [Priority(-1)]
+        public async Task ViewAsync()
+        {
+            const string s = ":x: Incorrect arguments.\nUsage: `view <application id>`";
+
+            await Context.Channel.SendMessageAsync(s);
         }
         
         /// <summary>
