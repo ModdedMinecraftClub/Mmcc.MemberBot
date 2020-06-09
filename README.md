@@ -8,6 +8,7 @@ A Discord bot for managing MMCC Member Applications.
 
 ## Commands
 **Commands for everyone**
+- `help` shows all available commands
 - `pending` see currently pending applications
 - `approved` see last 20 approved applications
 - `rejected` see last 20 rejected applications
