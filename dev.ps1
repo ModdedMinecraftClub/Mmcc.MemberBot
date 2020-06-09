@@ -1,7 +1,15 @@
 $ErrorActionPreference = "Stop"
 
+Write-Output "Building mmcc-member-bot...`n`n"
+
 .\build.ps1
 
-Clear-Host
+Write-Output "`n`nBuilt. Starting...`n`n"
 
-dotnet .\Bot\ModdedMinecraftClub.MemberBot.Bot.dll
+try {
+    Set-Location .\Bot
+    dotnet ModdedMinecraftClub.MemberBot.Bot.dll
+}
+finally {
+    Set-Location ..
+}
