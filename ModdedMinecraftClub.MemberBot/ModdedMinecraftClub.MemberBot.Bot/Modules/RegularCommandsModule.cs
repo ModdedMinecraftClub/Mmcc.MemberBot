@@ -2,17 +2,24 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using ModdedMinecraftClub.MemberBot.Bot.Database;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 
 namespace ModdedMinecraftClub.MemberBot.Bot.Modules
 {
     public class RegularCommandsModule : ModuleBase<SocketCommandContext>
     {
-        [Command("pending", RunMode = RunMode.Async)]
-        public async Task Pending()
+        private readonly DatabaseConnection _db;
+
+        public RegularCommandsModule(DatabaseConnection db)
         {
-            using var c = new DatabaseConnection();
-            var list = c.GetAllPending();
+            _db = db;
+        }
+        
+        [Command("pending", RunMode = RunMode.Async)]
+        public async Task PendingAsync()
+        {
+            var list = (await _db.GetAllPendingAsync()).ToList();
 
             if (!list.Any())
             {
@@ -28,10 +35,9 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         }
         
         [Command("approved", RunMode = RunMode.Async)]
-        public async Task Approved()
+        public async Task ApprovedAsync()
         {
-            using var c = new DatabaseConnection();
-            var list = c.GetLast20Approved();
+            var list = (await _db.GetLast20ApprovedAsync()).ToList();
 
             if (!list.Any())
             {
@@ -47,10 +53,9 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         }
         
         [Command("rejected", RunMode = RunMode.Async)]
-        public async Task Rejected()
+        public async Task RejectedAsync()
         {
-            using var c = new DatabaseConnection();
-            var list = c.GetLast20Rejected();
+            var list = (await _db.GetLast20RejectedAsync()).ToList();
 
             if (!list.Any())
             {
@@ -66,11 +71,9 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         }
         
         [Command("view", RunMode = RunMode.Async)]
-        public async Task View(int applicationId)
+        public async Task ViewAsync(int applicationId)
         {
-            using var c = new DatabaseConnection();
-            
-            var app = c.GetById(applicationId);
+            var app = await _db.GetByIdAsync(applicationId);
 
             if (app is null)
             {
@@ -78,37 +81,49 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                     
                 return;
             }
+
+            var embed = BuildApplicationEmbed(app);
             
-            var b = new EmbedBuilder();
-            b.AddField($"{app.AppStatus.ToString().ToUpper()}: Application by {app.AuthorName}", $"Author's Discord ID: {app.AuthorDiscordId}\nApplication ID: {app.AppId}");
+            await Context.Channel.SendMessageAsync("", false, embed);
+        }
+        
+        /// <summary>
+        /// Builds an embed for an application
+        /// </summary>
+        /// <param name="app">Application</param>
+        /// <returns>Embed representing an application</returns>
+        private Embed BuildApplicationEmbed(Application app)
+        {
+            var embedBuilder = new EmbedBuilder();
+            embedBuilder.AddField($"{app.AppStatus.ToString().ToUpper()}: Application by {app.AuthorName}", $"Author's Discord ID: {app.AuthorDiscordId}\nApplication ID: {app.AppId}");
             
             if (app.MessageContent is null || app.MessageContent.Equals(""))
             {
-                b.AddField("Provided details","*Player did not provide any details.*");
+                embedBuilder.AddField("Provided details","*Player did not provide any details.*");
             }
             else
             {
-                b.AddField("Provided details", app.MessageContent);
+                embedBuilder.AddField("Provided details", app.MessageContent);
             }
 
-            b.AddField("Link to original message", app.MessageUrl);
-            b.WithThumbnailUrl(app.ImageUrl);
-            b.WithFooter($"Applied at {app.AppTime}");
+            embedBuilder.AddField("Link to original message", app.MessageUrl);
+            embedBuilder.WithThumbnailUrl(app.ImageUrl);
+            embedBuilder.WithFooter($"Applied at {app.AppTime}");
                 
             switch (app.AppStatus)
             {
                 case ApplicationStatus.Approved:
-                    b.WithColor(Color.Green);
+                    embedBuilder.WithColor(Color.Green);
                     break;
                 case ApplicationStatus.Rejected:
-                    b.WithColor(Color.Red);
+                    embedBuilder.WithColor(Color.Red);
                     break;
                 default:
-                    b.WithColor(Color.Blue);
+                    embedBuilder.WithColor(Color.Blue);
                     break;
             }
-                
-            await Context.Channel.SendMessageAsync("", false, b.Build());
+
+            return embedBuilder.Build();
         }
     }
 }

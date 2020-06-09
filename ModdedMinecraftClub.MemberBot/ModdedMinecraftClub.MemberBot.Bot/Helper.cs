@@ -7,15 +7,15 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace ModdedMinecraftClub.MemberBot.Bot
 {
+    /// <summary>
+    /// Helper utility methods
+    /// </summary>
     public static class Helper
     {
-        public static string GetMySqlConnectionString()
-        {
-            var config = Program.Config.Mysql;
-            
-            return $"Server={config.ServerIp};Port={config.Port};Database={config.DatabaseName};Uid={config.Username};Pwd={config.Password};Allow User Variables=True";
-        }
-        
+        /// <summary>
+        /// Loads config from yml config file
+        /// </summary>
+        /// <returns>Deserialized config</returns>
         public static ConfigRoot LoadConfigFile()
         {
             var currentDir = Directory.GetCurrentDirectory();
@@ -28,6 +28,11 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             return deserializer.Deserialize<ConfigRoot>(File.ReadAllText(path));
         }
         
+        /// <summary>
+        /// Converts JSON date string into C# DateTime
+        /// </summary>
+        /// <param name="originalJsonDate">JSON date string</param>
+        /// <returns>DateTime for that JSON date string</returns>
         public static DateTime NormalizeDate(string originalJsonDate)
         {
             var date = DateTime.Parse(originalJsonDate, null, DateTimeStyles.RoundtripKind);

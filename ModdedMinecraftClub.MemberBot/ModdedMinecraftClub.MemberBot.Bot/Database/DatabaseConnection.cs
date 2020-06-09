@@ -1,102 +1,110 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 using MySql.Data.MySqlClient;
 
-namespace ModdedMinecraftClub.MemberBot.Bot
+namespace ModdedMinecraftClub.MemberBot.Bot.Database
 {
     public class DatabaseConnection : IDisposable
     {
         private readonly MySqlConnection _connection;
+        private readonly ConfigRoot _config;
 
-        public DatabaseConnection()
+        public DatabaseConnection(ConfigRoot config)
         {
-            _connection = new MySqlConnection(Helper.GetMySqlConnectionString());
+            _config = config;
+            _connection = new MySqlConnection($"Server={_config.Mysql.ServerIp};Port={_config.Mysql.Port};Database={_config.Mysql.DatabaseName};Uid={_config.Mysql.Username};Pwd={_config.Mysql.Password};Allow User Variables=True");
         }
         
         #region Startup Checks
         
-        public bool DoesTableExist()
+        public async Task<bool> DoesTableExistAsync()
         {
-            var name = Program.Config.Mysql.DatabaseName;
+            var name = _config.Mysql.DatabaseName;
             const string sql =
                 "SELECT count(*) FROM information_schema.TABLES WHERE (TABLE_SCHEMA = @name) AND (TABLE_NAME = 'applications');";
-            
-            var q = _connection.Query<int>(sql, new { name }).ToList();
 
-            return q[0] != 0;
+            var q = await _connection.QueryFirstOrDefaultAsync<int>(sql, new {name});
+
+            return q != 0;
         }
 
-        public void CreateTable()
+        public async Task CreateTableAsync()
         {
             const string sql =
                 "create table applications (\n\tAppId int not null auto_increment,\n\tAppStatus int not null,\n\tAppTime varchar(50) null,\n\tAuthorName varchar(50) not null,\n\tAuthorDiscordId long not null,\n\tMessageContent varchar(800) null,\n    MessageUrl varchar(250) not null,\n\tImageUrl varchar(250) null,\n\tprimary key (AppId)\n);";
 
-            _connection.Execute(sql);
+            await _connection.ExecuteAsync(sql);
         }
         
         #endregion
         
         #region Member Applications
         
-        public void InsertNewApplication(Application application)
+        public async Task InsertNewApplicationAsync(Application application)
         {
             const string sql =
                 "INSERT INTO applications (AppStatus, AppTime, AuthorName, AuthorDiscordId, MessageContent, MessageUrl, ImageUrl) VALUES (@AppStatus, @AppTime, @AuthorName, @AuthorDiscordId, @MessageContent, @MessageUrl, @ImageUrl)";
 
-            _connection.Execute(sql, application);
+            await _connection.ExecuteAsync(sql, application);
         }
 
-        public List<Application> GetAllPending()
+        public Task<IEnumerable<Application>> GetAllPendingAsync()
         {
             const string sql =
                 "SELECT * FROM applications WHERE AppStatus = 0 ORDER BY AppId";
 
-            return _connection.Query<Application>(sql).ToList();
+            var res = _connection.QueryAsync<Application>(sql);
+
+            return res;
         }
         
-        public List<Application> GetLast20Approved()
+        public async Task<IEnumerable<Application>> GetLast20ApprovedAsync()
         {
             const string sql =
                 "SELECT * FROM applications WHERE AppStatus = 1 ORDER BY AppId LIMIT 20";
-            
-            return _connection.Query<Application>(sql).ToList();
+
+            var res = await _connection.QueryAsync<Application>(sql);
+
+            return res;
         }
         
-        public List<Application> GetLast20Rejected()
+        public async Task<IEnumerable<Application>> GetLast20RejectedAsync()
         {
             const string sql =
                 "SELECT * FROM applications WHERE AppStatus = 2 ORDER BY AppId LIMIT 20";
             
-            return _connection.Query<Application>(sql).ToList();
+            var res = await _connection.QueryAsync<Application>(sql);
+
+            return res;
         }
         
-        public Application GetById(int applicationId)
+        public async Task<Application> GetByIdAsync(int applicationId)
         {
             const string sql =
                 "SELECT * FROM applications WHERE AppId = @AppId";
-            
-            var l = _connection.Query<Application>(sql, new { AppId = applicationId }).ToList();
 
-            return !l.Any() ? null : l[0];
+            var res = await _connection.QuerySingleOrDefaultAsync<Application>(sql, new {AppId = applicationId});
+
+            return res;
         }
 
-        public void MarkAsApproved(int applicationId)
+        public async Task MarkAsApprovedAsync(int applicationId)
         {
             const string sql =
                 "UPDATE applications SET AppStatus = 1 WHERE AppId = @AppId";
 
-            _connection.Execute(sql, new { AppId = applicationId });
+            await _connection.ExecuteAsync(sql, new { AppId = applicationId });
         }
 
-        public void MarkAsRejected(int applicationId)
+        public async Task MarkAsRejectedAsync(int applicationId)
         {
             const string sql =
                 "UPDATE applications SET AppStatus = 2 WHERE AppId = @AppId";
 
-            _connection.Execute(sql, new { AppId = applicationId });
+            await _connection.ExecuteAsync(sql, new { AppId = applicationId });
         }
         
         #endregion Member Applications

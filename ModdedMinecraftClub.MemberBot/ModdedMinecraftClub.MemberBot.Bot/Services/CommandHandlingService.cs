@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -6,6 +6,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using ModdedMinecraftClub.MemberBot.Bot.Database;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 
 namespace ModdedMinecraftClub.MemberBot.Bot.Services
@@ -15,15 +16,16 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services
         private readonly CommandService _commands;
         private readonly DiscordSocketClient _discord;
         private readonly IServiceProvider _services;
+        private readonly ConfigRoot _config;
 
         public CommandHandlingService(IServiceProvider services)
         {
             _commands = services.GetRequiredService<CommandService>();
             _discord = services.GetRequiredService<DiscordSocketClient>();
+            _config = services.GetRequiredService<ConfigRoot>();
             _services = services;
             
             _commands.CommandExecuted += CommandExecutedAsync;
-            
             _discord.MessageReceived += MessageReceivedAsync;
         }
 
@@ -48,7 +50,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services
             // offset where the prefix ends
             var argPos = 0;
 
-            if (message.Channel.Name.Equals(Program.Config.Discord.ChannelNames.MemberApps) && message.Attachments.Count != 0)
+            if (message.Channel.Name.Equals(_config.Discord.ChannelNames.MemberApps) && message.Attachments.Count != 0)
             {
                 var channel = message.Channel;
                 
@@ -62,16 +64,16 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services
                     MessageUrl = message.GetJumpUrl(),
                     ImageUrl = message.Attachments.First().Url
                 };
-
-                using (var c = new DatabaseConnection())
+                
+                using (var c = new DatabaseConnection(_config))
                 {
-                    c.InsertNewApplication(app);
+                    await c.InsertNewApplicationAsync(app);
                 }
 
                 await channel.SendMessageAsync(
                     "Your application has been submitted and you will be pinged once it has been processed.");
             }
-            else if (!message.HasCharPrefix(Program.Config.Discord.Prefix, ref argPos))
+            else if (!message.HasCharPrefix(_config.Discord.Prefix, ref argPos))
             {
                 return;
             }

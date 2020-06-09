@@ -1,20 +1,28 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using ModdedMinecraftClub.MemberBot.Bot.Database;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 
 namespace ModdedMinecraftClub.MemberBot.Bot.Modules
 {
     public class StaffCommandsModule : ModuleBase<SocketCommandContext>
     {
+        private readonly DatabaseConnection _db;
+        private readonly ConfigRoot _config;
+
+        public StaffCommandsModule(ConfigRoot configRoot, DatabaseConnection db)
+        {
+            _db = db;
+            _config = configRoot;
+        }
+        
         [Command("approve", RunMode = RunMode.Async)]
         [Priority(1)]
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task Approve(int applicationId, string serverPrefix, string ign)
         {
-            using var c = new DatabaseConnection();
-            var app = c.GetById(applicationId);
+            var app = await _db.GetByIdAsync(applicationId);
 
             if (app is null)
             {
@@ -23,14 +31,12 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
 
                 return;
             }
-
-            var channels = Context.Guild.TextChannels;
-            var roles = Context.Guild.Roles;
-            var users = Context.Guild.Users;
-            var polychatChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.Polychat));
-            var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.MemberApps));
-
-            var memberRole = roles.FirstOrDefault(role => role.Name.Contains($"[{serverPrefix.ToUpper()}]"));
+            
+            var channelFinder = new ChannelFinder(Context, _config);
+            var userRoleFinder = new UserRoleFinder(Context);
+            var polychatChannel = channelFinder.FindPolychatChannel();
+            var membersChannel = channelFinder.FindMemberAppsChannel();
+            var memberRole = userRoleFinder.FindMemberRole(serverPrefix);
 
             if (memberRole is null)
             {
@@ -38,8 +44,8 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                     
                 return;
             }
-                
-            var userToPromote = users.FirstOrDefault(user => user.Id == app.AuthorDiscordId);
+
+            var userToPromote = userRoleFinder.FindMemberAppAuthor(app);
 
             if (userToPromote is null)
             {
@@ -49,20 +55,12 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
             }
                 
             await userToPromote.AddRoleAsync(memberRole);
-                
             await polychatChannel.SendMessageAsync($"!promote {serverPrefix} {ign}");
-                
-            c.MarkAsApproved(applicationId);
-            
-            var resultEmbed = new EmbedBuilder();
-            resultEmbed.WithTitle($"Application approved");
-            resultEmbed.WithColor(Color.Green);
-            resultEmbed.WithThumbnailUrl("https://www.moddedminecraft.club/data/icon.png");
-            resultEmbed.WithDescription("Congratulations, your application has been approved.");
-            resultEmbed.AddField("Approved by", Context.Message.Author);
+            await _db.MarkAsApprovedAsync(applicationId);
 
-            await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}>", false, resultEmbed.Build());
-                
+            var embed = BuildApprovedEmbed();
+
+            await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}>", false, embed);
             await Context.Channel.SendMessageAsync($":white_check_mark: **Approved** application with ID: `{applicationId}`");
         }
         
@@ -73,13 +71,10 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         {
             if (arg.Equals("manual"))
             {
-                using (var c = new DatabaseConnection())
-                {
-                    c.MarkAsApproved(applicationId);
-                }
-                
+                await _db.MarkAsApprovedAsync(applicationId);
                 await Context.Channel.SendMessageAsync($":white_check_mark: **Marked** application with ID `{applicationId}` as approved but the player still has to be promoted manually.\nRemember to let the player know once you have promoted them manually.");
-            } else
+            } 
+            else
             {
                 await Context.Channel.SendMessageAsync($":x: Argument {arg} not recognized.");
             }
@@ -89,8 +84,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task Reject(int applicationId, [Remainder]string reason)
         {
-            using var c = new DatabaseConnection();
-            var app = c.GetById(applicationId);
+            var app = await _db.GetByIdAsync(applicationId);
 
             if (app is null)
             {
@@ -98,23 +92,50 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                     
                 return;
             }
-                
-            var channels = Context.Guild.TextChannels;
-            var membersChannel = channels.First(channel => channel.Name.Equals(Program.Config.Discord.ChannelNames.MemberApps));
-                
-            c.MarkAsRejected(applicationId);
             
-            var resultEmbed = new EmbedBuilder();
-            resultEmbed.WithTitle($"Application rejected");
-            resultEmbed.WithColor(Color.Red);
-            resultEmbed.WithDescription("Unfortunately, your application has been rejected.");
-            resultEmbed.WithThumbnailUrl("https://www.moddedminecraft.club/data/icon.png");
-            resultEmbed.AddField("Reason", reason);
-            resultEmbed.AddField("Rejected by", Context.Message.Author);
+            var channelFinder = new ChannelFinder(Context, _config);
+            var membersChannel = channelFinder.FindMemberAppsChannel();
+                
+            await _db.MarkAsRejectedAsync(applicationId);
 
-            await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}>", false, resultEmbed.Build());
+            var resultEmbed = BuildRejectedEmbed(reason);
 
+            await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}>", false, resultEmbed);
             await Context.Channel.SendMessageAsync($":white_check_mark: **Rejected** application with ID `{applicationId}`");
+        }
+        
+        /// <summary>
+        /// Builds an embed that lets the player know their application has been approved
+        /// </summary>
+        /// <returns>Embed letting the player know their application has been approved</returns>
+        private Embed BuildApprovedEmbed()
+        {
+            var embedBuilder = new EmbedBuilder();
+            embedBuilder.WithTitle($"Application approved");
+            embedBuilder.WithColor(Color.Green);
+            embedBuilder.WithThumbnailUrl("https://www.moddedminecraft.club/data/icon.png");
+            embedBuilder.WithDescription("Congratulations, your application has been approved.");
+            embedBuilder.AddField("Approved by", Context.Message.Author);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
+        /// Builds an embed that lets the player know their application has been rejected
+        /// </summary>
+        /// <param name="reason">Reason for rejection</param>
+        /// <returns>Embed letting the player know their application has been rejected</returns>
+        private Embed BuildRejectedEmbed(string reason)
+        {
+            var embedBuilder = new EmbedBuilder();
+            embedBuilder.WithTitle($"Application rejected");
+            embedBuilder.WithColor(Color.Red);
+            embedBuilder.WithDescription("Unfortunately, your application has been rejected.");
+            embedBuilder.WithThumbnailUrl("https://www.moddedminecraft.club/data/icon.png");
+            embedBuilder.AddField("Reason", reason);
+            embedBuilder.AddField("Rejected by", Context.Message.Author);
+
+            return embedBuilder.Build();
         }
     }
 }
