@@ -1,5 +1,0 @@
-language: csharp
-dotnet: 3.1.101
-mono: none
-script:
-  - ./build.sh
