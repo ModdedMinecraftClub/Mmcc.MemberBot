@@ -64,7 +64,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Database
         public async Task<IEnumerable<Application>> GetLast20ApprovedAsync()
         {
             const string sql =
-                "SELECT * FROM applications WHERE AppStatus = 1 ORDER BY AppId LIMIT 20";
+                "SELECT * FROM applications WHERE AppStatus = 1 ORDER BY AppId DESC LIMIT 20";
 
             var res = await _connection.QueryAsync<Application>(sql);
 
@@ -74,7 +74,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Database
         public async Task<IEnumerable<Application>> GetLast20RejectedAsync()
         {
             const string sql =
-                "SELECT * FROM applications WHERE AppStatus = 2 ORDER BY AppId LIMIT 20";
+                "SELECT * FROM applications WHERE AppStatus = 2 ORDER BY AppId DESC LIMIT 20";
             
             var res = await _connection.QueryAsync<Application>(sql);
 
