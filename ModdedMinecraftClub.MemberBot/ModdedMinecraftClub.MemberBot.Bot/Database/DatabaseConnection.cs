@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
-using ModdedMinecraftClub.MemberBot.Bot.Models;
 using MySql.Data.MySqlClient;
+using ModdedMinecraftClub.MemberBot.Bot.Models;
 
 namespace ModdedMinecraftClub.MemberBot.Bot.Database
 {
-    public class DatabaseConnection : IDisposable
+    public class DatabaseConnection : IDatabaseConnection
     {
         private readonly MySqlConnection _connection;
         private readonly ConfigRoot _config;
@@ -108,10 +107,10 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Database
         }
         
         #endregion Member Applications
-        
+
         public void Dispose()
         {
-           _connection.Dispose();
+            _connection.Dispose();
         }
     }
 }
