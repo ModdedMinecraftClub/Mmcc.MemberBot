@@ -1,28 +1,31 @@
 # MMCC Member Bot
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](https://github.com/ModdedMinecraftClub/mmcc-member-bot/blob/master/LICENSE)
 ![OS](https://img.shields.io/badge/platform-linux%20%7C%20windows-orange?style=flat-square)
-[![Framework](https://img.shields.io/badge/framework-.NET%20Core%203.1-blueviolet?style=flat-square)](https://dotnet.microsoft.com/download)
-[![Build Status](https://img.shields.io/travis/ModdedMinecraftClub/mmcc-member-bot?style=flat-square)](https://travis-ci.org/ModdedMinecraftClub/mmcc-member-bot)
+[![Framework](https://img.shields.io/badge/framework-.NET%205-blueviolet?style=flat-square)](https://dotnet.microsoft.com/download)
 
 A Discord bot for managing MMCC Member Applications.
 
 ## Commands
-**Commands for everyone**
+
+### Commands for everyone
+
 - `help` shows all available commands
 - `pending` see currently pending applications
 - `approved` see last 20 approved applications
 - `rejected` see last 20 rejected applications
 - `view <application id>` view a particular application
 
-**Staff-only commands**
+### Staff-only commands
+
 - `approve <application id> <server prefix> <ign>` approve a particular application
 - `approve <application id> manual` force mark an application as approved (player will not be promoted automatically, you will have to promote them manually but the application will be marked as approved and will be removed from the pending list)
 - `reject <application id> <reason>` reject a particular application
 
 ## Dependencies
+
 - [ModdedMinecraftClub/polychat](https://github.com/ModdedMinecraftClub/polychat)
 - [ModdedMinecraftClub/polychat-client](https://github.com/ModdedMinecraftClub/polychat)
-- [.NET Core SDK >=3.1](https://dotnet.microsoft.com/download)
+- [.NET 5 (only if using the `portable-fxdependent` version)](https://dotnet.microsoft.com/download)
 - [MySQL >=8.0](https://www.mysql.com/)
 
 ## Deployment
