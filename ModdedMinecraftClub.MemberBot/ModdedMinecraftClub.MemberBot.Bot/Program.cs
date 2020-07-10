@@ -34,11 +34,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
                         builder.AddDebug();
                     }
 
-                    builder.AddConsole(o =>
-                    {
-                        o.Format = ConsoleLoggerFormat.Systemd;
-                        o.TimestampFormat = "o";
-                    });
+                    builder.AddConsole();
                 })
                 .ConfigureServices((context, services) =>
                 {
@@ -46,10 +42,10 @@ namespace ModdedMinecraftClub.MemberBot.Bot
                     
                     services.AddTransient<IDatabaseConnectionService, DatabaseConnectionService>();
 
-                    services.AddSingleton<IStartupChecksService, StartupChecksChecksHostedService>();
+                    services.AddSingleton<IStartupChecksService, StartupChecksHostedService>();
                     services.AddHostedService(provider => provider.GetRequiredService<IStartupChecksService>());
                     
-                    services.AddSingleton<IBotService, BotService>();
+                    services.AddSingleton<IBotService, BotHostedService>();
                     services.AddHostedService(provider => provider.GetRequiredService<IBotService>());
                     
                     services.AddSingleton(provider => new CommandService(new CommandServiceConfig

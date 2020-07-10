@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Microsoft.Extensions.Options;
 using ModdedMinecraftClub.MemberBot.Bot.Extensions;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 using ModdedMinecraftClub.MemberBot.Bot.Services.Regular;
@@ -9,10 +10,10 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
 {
     public class StaffCommandsModule : ModuleBase<SocketCommandContext>
     {
-        private readonly DatabaseConnectionService _db;
-        private readonly BotSettings _config;
+        private readonly IDatabaseConnectionService _db;
+        private readonly IOptions<BotSettings> _config;
 
-        public StaffCommandsModule(BotSettings botSettings, DatabaseConnectionService db)
+        public StaffCommandsModule(IOptions<BotSettings> botSettings, IDatabaseConnectionService db)
         {
             _db = db;
             _config = botSettings;
@@ -33,7 +34,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 return;
             }
             
-            var channelFinder = new SocketTextChannelFinder(Context, _config);
+            var channelFinder = new SocketTextChannelFinder(Context, _config.Value);
             var userRoleFinder = new SocketGuildUserRoleFinder(Context);
             var polychatChannel = channelFinder.FindPolychatChannel();
             var membersChannel = channelFinder.FindMemberAppsChannel();
@@ -105,9 +106,9 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 return;
             }
             
-            var channelFinder = new SocketTextChannelFinder(Context, _config);
+            var channelFinder = new SocketTextChannelFinder(Context, _config.Value);
             var membersChannel = channelFinder.FindMemberAppsChannel();
-                
+            
             await _db.MarkAsRejectedAsync(applicationId);
 
             var resultEmbed = BuildRejectedEmbed(reason);

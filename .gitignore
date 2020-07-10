@@ -1,5 +1,5 @@
 # Don't include compiled C# binaries
-Bot/
+out/
 bin/
 obj/
 
@@ -10,8 +10,4 @@ obj/
 *.DotSettings
 
 # Don't include any secrets
-config.yml
-
-# Don't include my personal dev script
-dev_sql.yml
-spin_dev_sql.sh
+secret_config.yml

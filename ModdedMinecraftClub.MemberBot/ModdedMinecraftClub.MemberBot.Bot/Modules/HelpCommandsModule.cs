@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Microsoft.Extensions.Options;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 
 namespace ModdedMinecraftClub.MemberBot.Bot.Modules
@@ -9,9 +10,9 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
     {
         private readonly char _prefix;
         
-        public HelpCommandsModule(BotSettings botSettings)
+        public HelpCommandsModule(IOptions<BotSettings> config)
         {
-            _prefix = botSettings.Discord.Prefix;
+            _prefix = config.Value.Discord.Prefix;
         }
         
         [Command("help", RunMode = RunMode.Async)]

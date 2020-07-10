@@ -9,9 +9,9 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
 {
     public class RegularCommandsModule : ModuleBase<SocketCommandContext>
     {
-        private readonly DatabaseConnectionService _db;
+        private readonly IDatabaseConnectionService _db;
 
-        public RegularCommandsModule(DatabaseConnectionService db)
+        public RegularCommandsModule(IDatabaseConnectionService db)
         {
             _db = db;
         }
