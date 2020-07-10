@@ -9,9 +9,9 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
     {
         private readonly char _prefix;
         
-        public HelpCommandsModule(ConfigRoot configRoot)
+        public HelpCommandsModule(BotSettings botSettings)
         {
-            _prefix = configRoot.Discord.Prefix;
+            _prefix = botSettings.Discord.Prefix;
         }
         
         [Command("help", RunMode = RunMode.Async)]

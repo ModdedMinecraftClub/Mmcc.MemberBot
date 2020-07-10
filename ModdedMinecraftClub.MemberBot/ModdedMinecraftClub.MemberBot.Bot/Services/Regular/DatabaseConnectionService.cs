@@ -9,9 +9,9 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services.Regular
     public class DatabaseConnectionService : IDatabaseConnectionService
     {
         private readonly MySqlConnection _connection;
-        private readonly ConfigRoot _config;
+        private readonly BotSettings _config;
 
-        public DatabaseConnectionService(ConfigRoot config)
+        public DatabaseConnectionService(BotSettings config)
         {
             _config = config;
             _connection = new MySqlConnection($"Server={_config.Mysql.ServerIp};Port={_config.Mysql.Port};Database={_config.Mysql.DatabaseName};Uid={_config.Mysql.Username};Pwd={_config.Mysql.Password};Allow User Variables=True");

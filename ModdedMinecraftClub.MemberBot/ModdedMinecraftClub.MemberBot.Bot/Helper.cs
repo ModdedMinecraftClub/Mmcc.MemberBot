@@ -16,7 +16,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         /// Loads config from yml config file
         /// </summary>
         /// <returns>Deserialized config</returns>
-        public static ConfigRoot LoadConfigFile()
+        public static BotSettings LoadConfigFile()
         {
             var currentDir = Directory.GetCurrentDirectory();
             var mainDir = Directory.GetParent(currentDir).ToString();
@@ -25,7 +25,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
                 .WithNamingConvention(new CamelCaseNamingConvention())
                 .Build();
             
-            return deserializer.Deserialize<ConfigRoot>(File.ReadAllText(path));
+            return deserializer.Deserialize<BotSettings>(File.ReadAllText(path));
         }
         
         /// <summary>

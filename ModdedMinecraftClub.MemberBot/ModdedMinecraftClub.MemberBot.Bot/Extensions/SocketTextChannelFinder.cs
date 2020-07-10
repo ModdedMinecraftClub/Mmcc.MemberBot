@@ -8,10 +8,10 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Extensions
 {
     public class SocketTextChannelFinder : ISocketTextChannelFinder
     {
-        private readonly ConfigRoot _config;
+        private readonly BotSettings _config;
         private readonly IReadOnlyCollection<SocketTextChannel> _textChannels;
 
-        public SocketTextChannelFinder(SocketCommandContext context, ConfigRoot config)
+        public SocketTextChannelFinder(SocketCommandContext context, BotSettings config)
         {
             _config = config;
             _textChannels = context.Guild.TextChannels;

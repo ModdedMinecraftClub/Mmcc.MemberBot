@@ -16,13 +16,13 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services
         private readonly CommandService _commands;
         private readonly DiscordSocketClient _discord;
         private readonly IServiceProvider _services;
-        private readonly ConfigRoot _config;
+        private readonly BotSettings _config;
 
         public CommandHandlingService(IServiceProvider services)
         {
             _commands = services.GetRequiredService<CommandService>();
             _discord = services.GetRequiredService<DiscordSocketClient>();
-            _config = services.GetRequiredService<ConfigRoot>();
+            _config = services.GetRequiredService<BotSettings>();
             _services = services;
             
             _commands.CommandExecuted += CommandExecutedAsync;

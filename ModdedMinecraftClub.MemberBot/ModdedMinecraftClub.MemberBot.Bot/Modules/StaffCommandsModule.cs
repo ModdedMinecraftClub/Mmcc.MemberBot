@@ -10,12 +10,12 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
     public class StaffCommandsModule : ModuleBase<SocketCommandContext>
     {
         private readonly DatabaseConnectionService _db;
-        private readonly ConfigRoot _config;
+        private readonly BotSettings _config;
 
-        public StaffCommandsModule(ConfigRoot configRoot, DatabaseConnectionService db)
+        public StaffCommandsModule(BotSettings botSettings, DatabaseConnectionService db)
         {
             _db = db;
-            _config = configRoot;
+            _config = botSettings;
         }
         
         [Command("approve", RunMode = RunMode.Async)]
