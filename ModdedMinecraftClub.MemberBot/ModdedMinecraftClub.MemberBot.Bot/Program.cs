@@ -1,87 +1,66 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
 using Discord.Commands;
-using ModdedMinecraftClub.MemberBot.Bot.Database;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
-using ModdedMinecraftClub.MemberBot.Bot.Services;
+using ModdedMinecraftClub.MemberBot.Bot.Services.Hosted;
+using ModdedMinecraftClub.MemberBot.Bot.Services.Regular;
 
 namespace ModdedMinecraftClub.MemberBot.Bot
 {
-    internal class Program
+    class Program
     {
-        private static async Task Main()
-            => await new Program().MainAsync();
-
-        private async Task MainAsync()
+        static async Task Main(string[] args)
         {
-            var services = ConfigureServices();
-            var config = services.GetRequiredService<ConfigRoot>();
-            
-            await Startup(config);
-            
-            var client = services.GetRequiredService<DiscordSocketClient>();
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureHostConfiguration(builder =>
+                {
+                    builder.AddCommandLine(args);
+                })
+                .ConfigureAppConfiguration(builder =>
+                {
+                    builder.AddYamlFile("appsettings.yml", optional: false);
+                })
+                .ConfigureLogging((context, builder) =>
+                {
+                    builder.ClearProviders();
 
-            client.Log += LogAsync;
-            services.GetRequiredService<CommandService>().Log += LogAsync;
-            
-            await client.LoginAsync(TokenType.Bot, config.Discord.Token);
-            await client.StartAsync();
-            await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
-            await Task.Delay(-1);
-        }
+                    if (context.HostingEnvironment.IsDevelopment())
+                    {
+                        builder.AddDebug();
+                    }
 
-        private static Task LogAsync(LogMessage log)
-        {
-            Console.WriteLine(log.ToString());
+                    builder.AddConsole();
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    services.Configure<BotSettings>(context.Configuration.GetSection("BotSettings"));
+                    
+                    services.AddTransient<IDatabaseConnectionService, DatabaseConnectionService>();
 
-            return Task.CompletedTask;
-        }
+                    services.AddSingleton<IStartupChecksService, StartupChecksHostedService>();
+                    services.AddHostedService(provider => provider.GetRequiredService<IStartupChecksService>());
+                    
+                    services.AddSingleton<IBotService, BotHostedService>();
+                    services.AddHostedService(provider => provider.GetRequiredService<IBotService>());
+                    
+                    services.AddSingleton(provider => new CommandService(new CommandServiceConfig
+                    {
+                        CaseSensitiveCommands = false,
+                        DefaultRunMode = RunMode.Sync,
+                        LogLevel = LogSeverity.Verbose
+                    }));
+                    
+                    services.AddHostedService<CommandHostedService>();
+                });
 
-        private ServiceProvider ConfigureServices()
-        {
-            return new ServiceCollection()
-                .AddSingleton<ConfigRoot>(Helper.LoadConfigFile())
-                .AddTransient<DatabaseConnection>()
-                .AddSingleton<DiscordSocketClient>()
-                .AddSingleton<CommandService>()
-                .AddSingleton<CommandHandlingService>()
-                .AddSingleton<HttpClient>()
-                .BuildServiceProvider();
-        }
-        
-        /// <summary>
-        /// Runs startup checks and creates table if needed
-        /// </summary>
-        /// <param name="config">Application config</param>
-        private static async Task Startup(ConfigRoot config)
-        {
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
-            
-            Console.WriteLine("MMCC Member Bot v4.0\n");
-            
-            using var db = new DatabaseConnection(config);
-            var exists = await db.DoesTableExistAsync();
-            
-            Console.WriteLine($"[{DateTime.Now}] Checking if \"applications\" table exists...\n");
-
-            if (!exists)
-            {
-                Console.WriteLine($"[{DateTime.Now}] Couldn't find the table. Creating...");
-                
-                await db.CreateTableAsync();
-                
-                Console.WriteLine($"[{DateTime.Now}] Successfully created the table. Starting the bot...\n");
-            }
-            else
-            {
-                Console.WriteLine($"[{DateTime.Now}] Found the table. Starting the bot...\n");
-            }
-            
-            Console.ResetColor();
+            using var builtHost = host.Build();
+            await builtHost.StartAsync();
+            await builtHost.WaitForShutdownAsync();
         }
     }
 }

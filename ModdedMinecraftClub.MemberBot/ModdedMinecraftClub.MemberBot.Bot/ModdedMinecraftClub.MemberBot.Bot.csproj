@@ -2,16 +2,24 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>netcoreapp5.0</TargetFramework>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Dapper" Version="2.0.35" />
-      <PackageReference Include="Discord.Net" Version="2.2.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0-preview.4.20251.6" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0-preview.3.20215.2" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0-preview.3.20215.2" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0-preview.3.20215.2" />
+      <PackageReference Include="Discord.Net" Version="2.3.0-dev-20200507.9" />
+      <PackageReference Include="Dapper" Version="2.0.35" />      
       <PackageReference Include="MySql.Data" Version="8.0.20" />
-      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-      <PackageReference Include="YamlDotNet" Version="8.1.2" />
+      <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="appsettings.yml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

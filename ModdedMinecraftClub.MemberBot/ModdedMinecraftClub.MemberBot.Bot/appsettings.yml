@@ -1,0 +1,25 @@
+Logging:
+  LogLevel:
+    Default: "Information"
+    Microsoft: "Warning"
+    Microsoft.Hosting.Lifetime: "Information"
+BotSettings:
+  Mysql:
+    # the final connection string looks like this:
+    # Server={serverIp};Port={port};Database={databaseName};{Uid=username};Pwd={password}
+    ServerIp: ""
+    Port: 3306
+    DatabaseName: ""
+    Username: ""
+    Password: ""
+  Discord:
+    # prefix for commands (e.g. <prefix>pending (e.g. !pending))
+    Prefix: ""
+    # discord bot token (obtainable at discordapp.com/developers)
+    Token: ""
+    ChannelNames:
+      # put in all channel names without '#'
+      # the name of the channel with the player apps (e.g. #member-apps) (not the staff spam channel)
+      MemberApps: ""
+      # the name of the channel to which member-bot will send polychat commands
+      Polychat: ""

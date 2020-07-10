@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
-using ModdedMinecraftClub.MemberBot.Bot.Models;
+using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
+using ModdedMinecraftClub.MemberBot.Bot.Models;
 
-namespace ModdedMinecraftClub.MemberBot.Bot.Database
+namespace ModdedMinecraftClub.MemberBot.Bot.Services.Regular
 {
-    public class DatabaseConnection : IDisposable
+    public class DatabaseConnectionService : IDatabaseConnectionService
     {
         private readonly MySqlConnection _connection;
-        private readonly ConfigRoot _config;
+        private readonly BotSettings _config;
 
-        public DatabaseConnection(ConfigRoot config)
+        public DatabaseConnectionService(IOptions<BotSettings> config)
         {
-            _config = config;
+            _config = config.Value;
             _connection = new MySqlConnection($"Server={_config.Mysql.ServerIp};Port={_config.Mysql.Port};Database={_config.Mysql.DatabaseName};Uid={_config.Mysql.Username};Pwd={_config.Mysql.Password};Allow User Variables=True");
         }
         
@@ -108,10 +108,10 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Database
         }
         
         #endregion Member Applications
-        
+
         public void Dispose()
         {
-           _connection.Dispose();
+            _connection.Dispose();
         }
     }
 }

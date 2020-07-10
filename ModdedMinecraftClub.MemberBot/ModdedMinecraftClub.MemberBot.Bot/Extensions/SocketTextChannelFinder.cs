@@ -4,14 +4,14 @@ using Discord.Commands;
 using Discord.WebSocket;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 
-namespace ModdedMinecraftClub.MemberBot.Bot
+namespace ModdedMinecraftClub.MemberBot.Bot.Extensions
 {
-    public class ChannelFinder
+    public class SocketTextChannelFinder : ISocketTextChannelFinder
     {
-        private readonly ConfigRoot _config;
+        private readonly BotSettings _config;
         private readonly IReadOnlyCollection<SocketTextChannel> _textChannels;
 
-        public ChannelFinder(SocketCommandContext context, ConfigRoot config)
+        public SocketTextChannelFinder(SocketCommandContext context, BotSettings config)
         {
             _config = config;
             _textChannels = context.Guild.TextChannels;
