@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 using ModdedMinecraftClub.MemberBot.Bot.Services.Hosted;
 using ModdedMinecraftClub.MemberBot.Bot.Services.Regular;
@@ -34,7 +33,10 @@ namespace ModdedMinecraftClub.MemberBot.Bot
                         builder.AddDebug();
                     }
 
-                    builder.AddConsole();
+                    builder.AddConsole(c =>
+                    {
+                        c.TimestampFormat = "[dd/MM/yyyy HH:mm:ss] ";
+                    });
                 })
                 .ConfigureServices((context, services) =>
                 {

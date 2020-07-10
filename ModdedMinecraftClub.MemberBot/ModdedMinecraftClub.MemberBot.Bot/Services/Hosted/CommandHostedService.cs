@@ -104,14 +104,19 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services.Hosted
                 },
                 callback: async (result) =>
                 {
-                    if(result.IsSuccess)
+                    if (result.IsSuccess)
                     {
                         return;
                     }
 
-                    if(result.Error.HasValue)
+                    if (result.Error == CommandError.UnknownCommand)
                     {
-                        await message.Channel.SendMessageAsync($"Error: {result.Error.Value}, {result.ErrorReason}");
+                        return;
+                    }
+
+                    if (result.Error.HasValue)
+                    {
+                        await message.Channel.SendMessageAsync($":x: Error: {result.Error.Value}, {result.ErrorReason}");
                     }
                 });
         }
