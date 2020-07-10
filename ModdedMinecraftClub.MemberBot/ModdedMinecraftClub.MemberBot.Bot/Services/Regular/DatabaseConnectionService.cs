@@ -4,14 +4,14 @@ using Dapper;
 using MySql.Data.MySqlClient;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 
-namespace ModdedMinecraftClub.MemberBot.Bot.Database
+namespace ModdedMinecraftClub.MemberBot.Bot.Services.Regular
 {
-    public class DatabaseConnection : IDatabaseConnection
+    public class DatabaseConnectionService : IDatabaseConnectionService
     {
         private readonly MySqlConnection _connection;
         private readonly ConfigRoot _config;
 
-        public DatabaseConnection(ConfigRoot config)
+        public DatabaseConnectionService(ConfigRoot config)
         {
             _config = config;
             _connection = new MySqlConnection($"Server={_config.Mysql.ServerIp};Port={_config.Mysql.Port};Database={_config.Mysql.DatabaseName};Uid={_config.Mysql.Username};Pwd={_config.Mysql.Password};Allow User Variables=True");

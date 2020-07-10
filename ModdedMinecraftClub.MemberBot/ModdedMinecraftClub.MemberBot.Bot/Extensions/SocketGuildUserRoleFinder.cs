@@ -4,14 +4,14 @@ using Discord.Commands;
 using Discord.WebSocket;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 
-namespace ModdedMinecraftClub.MemberBot.Bot
+namespace ModdedMinecraftClub.MemberBot.Bot.Extensions
 {
-    public class UserRoleFinder
+    public class SocketGuildUserRoleFinder : ISocketGuildUserRoleFinder
     {
         private readonly IReadOnlyCollection<SocketGuildUser> _users;
         private readonly IReadOnlyCollection<SocketRole> _roles;
 
-        public UserRoleFinder(SocketCommandContext context)
+        public SocketGuildUserRoleFinder(SocketCommandContext context)
         {
             _users = context.Guild.Users;
             _roles = context.Guild.Roles;

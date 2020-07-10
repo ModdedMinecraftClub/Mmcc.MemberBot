@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using ModdedMinecraftClub.MemberBot.Bot.Database;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 using ModdedMinecraftClub.MemberBot.Bot.Services;
+using ModdedMinecraftClub.MemberBot.Bot.Services.Regular;
 
 namespace ModdedMinecraftClub.MemberBot.Bot
 {
@@ -45,7 +45,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
         {
             return new ServiceCollection()
                 .AddSingleton<ConfigRoot>(Helper.LoadConfigFile())
-                .AddTransient<DatabaseConnection>()
+                .AddTransient<DatabaseConnectionService>()
                 .AddSingleton<DiscordSocketClient>()
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandlingService>()
@@ -63,7 +63,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
             
             Console.WriteLine("MMCC Member Bot v4.0\n");
             
-            using var db = new DatabaseConnection(config);
+            using var db = new DatabaseConnectionService(config);
             var exists = await db.DoesTableExistAsync();
             
             Console.WriteLine($"[{DateTime.Now}] Checking if \"applications\" table exists...\n");

@@ -2,16 +2,16 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using ModdedMinecraftClub.MemberBot.Bot.Database;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
+using ModdedMinecraftClub.MemberBot.Bot.Services.Regular;
 
 namespace ModdedMinecraftClub.MemberBot.Bot.Modules
 {
     public class RegularCommandsModule : ModuleBase<SocketCommandContext>
     {
-        private readonly DatabaseConnection _db;
+        private readonly DatabaseConnectionService _db;
 
-        public RegularCommandsModule(DatabaseConnection db)
+        public RegularCommandsModule(DatabaseConnectionService db)
         {
             _db = db;
         }

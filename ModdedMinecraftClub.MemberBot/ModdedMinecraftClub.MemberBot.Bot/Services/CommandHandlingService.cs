@@ -6,8 +6,8 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
-using ModdedMinecraftClub.MemberBot.Bot.Database;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
+using ModdedMinecraftClub.MemberBot.Bot.Services.Regular;
 
 namespace ModdedMinecraftClub.MemberBot.Bot.Services
 {
@@ -65,7 +65,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services
                     ImageUrl = message.Attachments.First().Url
                 };
                 
-                using (var c = new DatabaseConnection(_config))
+                using (var c = new DatabaseConnectionService(_config))
                 {
                     await c.InsertNewApplicationAsync(app);
                 }

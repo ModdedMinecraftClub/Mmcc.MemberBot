@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 
-namespace ModdedMinecraftClub.MemberBot.Bot.Database
+namespace ModdedMinecraftClub.MemberBot.Bot.Services.Regular
 {
-    public interface IDatabaseConnection : IDisposable
+    public interface IDatabaseConnectionService : IDisposable
     {
         Task<bool> DoesTableExistAsync();
         Task CreateTableAsync();

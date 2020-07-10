@@ -1,17 +1,18 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using ModdedMinecraftClub.MemberBot.Bot.Database;
+using ModdedMinecraftClub.MemberBot.Bot.Extensions;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
+using ModdedMinecraftClub.MemberBot.Bot.Services.Regular;
 
 namespace ModdedMinecraftClub.MemberBot.Bot.Modules
 {
     public class StaffCommandsModule : ModuleBase<SocketCommandContext>
     {
-        private readonly DatabaseConnection _db;
+        private readonly DatabaseConnectionService _db;
         private readonly ConfigRoot _config;
 
-        public StaffCommandsModule(ConfigRoot configRoot, DatabaseConnection db)
+        public StaffCommandsModule(ConfigRoot configRoot, DatabaseConnectionService db)
         {
             _db = db;
             _config = configRoot;
@@ -32,8 +33,8 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 return;
             }
             
-            var channelFinder = new ChannelFinder(Context, _config);
-            var userRoleFinder = new UserRoleFinder(Context);
+            var channelFinder = new SocketTextChannelFinder(Context, _config);
+            var userRoleFinder = new SocketGuildUserRoleFinder(Context);
             var polychatChannel = channelFinder.FindPolychatChannel();
             var membersChannel = channelFinder.FindMemberAppsChannel();
             var memberRole = userRoleFinder.FindMemberRole(serverPrefix);
@@ -104,7 +105,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 return;
             }
             
-            var channelFinder = new ChannelFinder(Context, _config);
+            var channelFinder = new SocketTextChannelFinder(Context, _config);
             var membersChannel = channelFinder.FindMemberAppsChannel();
                 
             await _db.MarkAsRejectedAsync(applicationId);
