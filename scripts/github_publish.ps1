@@ -1,4 +1,4 @@
-# Publishes self-contained versions of the app for Linux and Windows and creates zip archives for GitHub
+# Publishes self-contained and portable versions of the app for Linux and Windows and creates zip archives for GitHub Releases
 param(
     [Parameter(Mandatory=$true)][string]$version
 )
