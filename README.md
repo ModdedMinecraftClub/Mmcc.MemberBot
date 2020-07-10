@@ -26,10 +26,10 @@ A Discord bot for managing MMCC Member Applications.
 - [MySQL >=8.0](https://www.mysql.com/)
 
 ## Deployment
+
 1. Deploy [polychat](https://github.com/ModdedMinecraftClub/polychat) and [polychat-client](https://github.com/ModdedMinecraftClub/polychat-client) and create a MySQL database for the bot.
-2. Download .NET Core SDK from [here](https://dotnet.microsoft.com/download).
-3. Clone this repo.
-4. Run `build.sh` (Linux) or `build.ps1` (Windows). This will create a directory named `Bot` within the root directory of this repo with compiled C# binaries.
-5. Rename `sample_config.yml` to `config.yml` and fill it in.
-6. To run the bot navigate to the `Bot` directory and run the following command:
-`dotnet ModdedMinecraftClub.MemberBot.Bot.dll`
+2. Download the latest compiled version of the bot from [here](https://github.com/ModdedMinecraftClub/mmcc-member-bot/releases). If you choose the `portable-fxdependent` version of the bot, you will need to also download .NET 5 from [here](https://dotnet.microsoft.com/download/dotnet/5.0).
+3. Unzip the compressed version of the bot you've downloaded.
+4. Go to the folder with the unzipped binaries.
+5. Edit `appconfig.yml` so that it contains correct values for your use-case scenario.
+6. On Linux launch `ModdedMinecraftClub.MemberBot.Bot` executable, on Windows launch `ModdedMinecraftClub.MemberBot.Bot.exe`, or if you've chosen the portable version of the bot run the `dotnet ModdedMinecraftClub.MemberBot.Bot.dll` command.
