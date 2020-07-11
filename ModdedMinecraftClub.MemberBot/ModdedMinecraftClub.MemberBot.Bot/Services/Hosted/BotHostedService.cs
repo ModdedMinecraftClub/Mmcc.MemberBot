@@ -36,7 +36,8 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services.Hosted
         {
             if(DiscordClient.ConnectionState != ConnectionState.Connected)
             {
-                _logger.LogWarning("A handler attempted to execute a handler while the bot was disconnected"); 
+                _logger.LogWarning("A handler attempted to execute a handler while the bot was disconnected");
+                
                 return;
             }
 
@@ -51,7 +52,6 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services.Hosted
             {
                 return Task.CompletedTask;
             }
-            
 
             _logger.LogCritical(arg, "Discord disconnected with a non-resumable error");
             _applicationLifetime.StopApplication();
