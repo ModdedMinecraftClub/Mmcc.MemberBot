@@ -32,7 +32,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services.Hosted
             DiscordClient = new DiscordSocketClient();
         }
         
-        public void ExecuteHandlerAsyncronously<TReturn>(Func<DiscordSocketClient, Task<TReturn>> handler, Action<TReturn> callback)
+        public void ExecuteHandlerAsynchronously<TReturn>(Func<DiscordSocketClient, Task<TReturn>> handler, Action<TReturn> callback)
         {
             if(DiscordClient.ConnectionState != ConnectionState.Connected)
             {

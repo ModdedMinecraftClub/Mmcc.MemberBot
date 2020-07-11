@@ -20,7 +20,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         {
             var embedBuilder = new EmbedBuilder();
             
-            // Basic info
+            // basic info;
             embedBuilder.WithTitle("Help");
             embedBuilder.WithDescription("MMCC Member Bot Help");
             embedBuilder.WithColor(Color.Blue);

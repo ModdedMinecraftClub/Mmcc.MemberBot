@@ -7,12 +7,7 @@ using ModdedMinecraftClub.MemberBot.Bot.Services.Regular;
 
 namespace ModdedMinecraftClub.MemberBot.Bot.Services.Hosted
 {
-    public interface IStartupChecksService : IHostedService
-    {
-        
-    }
-    
-    public class StartupChecksHostedService : IStartupChecksService
+    public class StartupChecksHostedService : IHostedService
     {
         private readonly ILogger<StartupChecksHostedService> _logger;
         private readonly IDatabaseConnectionService _databaseConnection;

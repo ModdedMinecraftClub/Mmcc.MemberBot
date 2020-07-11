@@ -96,7 +96,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services.Hosted
                 return;
             }
 
-            _botService.ExecuteHandlerAsyncronously(
+            _botService.ExecuteHandlerAsynchronously(
                 handler: (client) =>
                 {
                     var context = new SocketCommandContext(client, userMessage);

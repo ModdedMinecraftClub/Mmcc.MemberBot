@@ -6,29 +6,27 @@ using ModdedMinecraftClub.MemberBot.Bot.Models;
 
 namespace ModdedMinecraftClub.MemberBot.Bot.Extensions
 {
+    public interface ISocketGuildUserRoleFinder
+    {
+        SocketGuildUser FindMemberAppAuthor(Application app);
+        SocketRole FindMemberRole(string serverPrefix);
+    }
+    
     public class SocketGuildUserRoleFinder : ISocketGuildUserRoleFinder
     {
         private readonly IReadOnlyCollection<SocketGuildUser> _users;
         private readonly IReadOnlyCollection<SocketRole> _roles;
 
-        public SocketGuildUserRoleFinder(SocketCommandContext context)
+        public SocketGuildUserRoleFinder(IReadOnlyCollection<SocketGuildUser> users, IReadOnlyCollection<SocketRole> roles)
         {
-            _users = context.Guild.Users;
-            _roles = context.Guild.Roles;
+            _users = users;
+            _roles = roles;
         }
 
         public SocketGuildUser FindMemberAppAuthor(Application app)
-        {
-            var userToPromote = _users.FirstOrDefault(user => user.Id == app.AuthorDiscordId);
-
-            return userToPromote;
-        }
+            => _users.FirstOrDefault(user => user.Id == app.AuthorDiscordId);
 
         public SocketRole FindMemberRole(string serverPrefix)
-        {
-            var memberRole = _roles.FirstOrDefault(role => role.Name.Contains($"[{serverPrefix.ToUpper()}]"));
-
-            return memberRole;
-        }
+            => _roles.FirstOrDefault(role => role.Name.Contains($"[{serverPrefix.ToUpper()}]"));
     }
 }

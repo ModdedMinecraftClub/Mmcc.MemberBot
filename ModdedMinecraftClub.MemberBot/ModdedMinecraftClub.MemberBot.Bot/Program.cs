@@ -44,8 +44,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
                     
                     services.AddTransient<IDatabaseConnectionService, DatabaseConnectionService>();
 
-                    services.AddSingleton<IStartupChecksService, StartupChecksHostedService>();
-                    services.AddHostedService(provider => provider.GetRequiredService<IStartupChecksService>());
+                    services.AddHostedService<StartupChecksHostedService>();
                     
                     services.AddSingleton<IBotService, BotHostedService>();
                     services.AddHostedService(provider => provider.GetRequiredService<IBotService>());

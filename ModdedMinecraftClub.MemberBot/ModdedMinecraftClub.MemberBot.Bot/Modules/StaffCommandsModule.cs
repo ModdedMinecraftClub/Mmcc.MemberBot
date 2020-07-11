@@ -13,10 +13,10 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
         private readonly IDatabaseConnectionService _db;
         private readonly IOptions<BotSettings> _config;
 
-        public StaffCommandsModule(IOptions<BotSettings> botSettings, IDatabaseConnectionService db)
+        public StaffCommandsModule(IOptions<BotSettings> config, IDatabaseConnectionService db)
         {
             _db = db;
-            _config = botSettings;
+            _config = config;
         }
         
         [Command("approve", RunMode = RunMode.Async)]
@@ -34,8 +34,8 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 return;
             }
             
-            var channelFinder = new SocketTextChannelFinder(Context, _config.Value);
-            var userRoleFinder = new SocketGuildUserRoleFinder(Context);
+            var channelFinder = new SocketTextChannelsFinder(Context.Guild.TextChannels, _config.Value);
+            var userRoleFinder = new SocketGuildUserRoleFinder(Context.Guild.Users, Context.Guild.Roles);
             var polychatChannel = channelFinder.FindPolychatChannel();
             var membersChannel = channelFinder.FindMemberAppsChannel();
             var memberRole = userRoleFinder.FindMemberRole(serverPrefix);
@@ -55,7 +55,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
 
                 return;
             }
-                
+            
             await userToPromote.AddRoleAsync(memberRole);
             await polychatChannel.SendMessageAsync($"!promote {serverPrefix} {ign}");
             await _db.MarkAsApprovedAsync(applicationId);
@@ -106,7 +106,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 return;
             }
             
-            var channelFinder = new SocketTextChannelFinder(Context, _config.Value);
+            var channelFinder = new SocketTextChannelsFinder(Context.Guild.TextChannels, _config.Value);
             var membersChannel = channelFinder.FindMemberAppsChannel();
             
             await _db.MarkAsRejectedAsync(applicationId);
