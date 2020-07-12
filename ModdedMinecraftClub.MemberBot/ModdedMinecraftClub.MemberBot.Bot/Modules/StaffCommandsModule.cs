@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using Microsoft.Extensions.Options;
 using ModdedMinecraftClub.MemberBot.Bot.Extensions;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
@@ -11,12 +12,14 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
     public class StaffCommandsModule : ModuleBase<SocketCommandContext>
     {
         private readonly IDatabaseConnectionService _db;
-        private readonly IOptions<BotSettings> _config;
+        private readonly string _polychatChannelName;
+        private readonly string _memberAppsChannel;
 
         public StaffCommandsModule(IOptions<BotSettings> config, IDatabaseConnectionService db)
         {
             _db = db;
-            _config = config;
+            _polychatChannelName = config.Value.Discord.ChannelNames.Polychat;
+            _memberAppsChannel = config.Value.Discord.ChannelNames.MemberApps;
         }
         
         [Command("approve", RunMode = RunMode.Async)]
@@ -33,12 +36,10 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
 
                 return;
             }
-            
-            var channelFinder = new SocketTextChannelsFinder(Context.Guild.TextChannels, _config.Value);
-            var userRoleFinder = new SocketGuildUserRoleFinder(Context.Guild.Users, Context.Guild.Roles);
-            var polychatChannel = channelFinder.FindPolychatChannel();
-            var membersChannel = channelFinder.FindMemberAppsChannel();
-            var memberRole = userRoleFinder.FindMemberRole(serverPrefix);
+
+            var polychatChannel = Context.Guild.TextChannels.FindChannel(_polychatChannelName);
+            var membersChannel = Context.Guild.TextChannels.FindChannel(_memberAppsChannel);
+            var memberRole = Context.Guild.Roles.FindMemberRole(serverPrefix);
 
             if (memberRole is null)
             {
@@ -47,7 +48,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                 return;
             }
 
-            var userToPromote = userRoleFinder.FindMemberAppAuthor(app);
+            var userToPromote = Context.Guild.Users.FindMemberAppAuthor(app);
 
             if (userToPromote is null)
             {
@@ -105,10 +106,9 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Modules
                     
                 return;
             }
-            
-            var channelFinder = new SocketTextChannelsFinder(Context.Guild.TextChannels, _config.Value);
-            var membersChannel = channelFinder.FindMemberAppsChannel();
-            
+
+            var membersChannel = Context.Guild.TextChannels.FindChannel(_memberAppsChannel);
+
             await _db.MarkAsRejectedAsync(applicationId);
 
             var resultEmbed = BuildRejectedEmbed(reason);

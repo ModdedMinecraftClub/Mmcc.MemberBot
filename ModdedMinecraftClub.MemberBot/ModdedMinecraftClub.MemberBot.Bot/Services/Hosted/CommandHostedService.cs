@@ -56,11 +56,6 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services.Hosted
                 return;
             }
             
-            if (message.Source != MessageSource.User)
-            {
-                return;
-            }
-
             if (!(message is SocketUserMessage userMessage))
             {
                 return;
