@@ -9,6 +9,10 @@ $ErrorActionPreference = "Stop"
 
 $starterLocation = Get-Location
 
+function Clear-Out {
+    Remove-Item -Path "./out/*" -Recurse -Force
+}
+
 function Zip {
     $children = Get-ChildItem -Path ./out/
 
@@ -22,6 +26,7 @@ function Zip {
 
 try {
     Set-Location ..
+    Clear-Out
     Build-Sc
     Build-Portable
     Zip
