@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
 using ModdedMinecraftClub.MemberBot.Bot.Services.Hosted;
 using ModdedMinecraftClub.MemberBot.Bot.Services.Regular;
@@ -32,6 +33,16 @@ namespace ModdedMinecraftClub.MemberBot.Bot
                     {
                         builder.AddDebug();
                     }
+
+                    builder.AddConsole(o =>
+                    {
+                        if (context.HostingEnvironment.IsProduction())
+                        {
+                            o.DisableColors = true;
+                        }
+                        o.Format = ConsoleLoggerFormat.Systemd;
+                        o.TimestampFormat = "o";
+                    });
 
                     builder.AddConsole(c =>
                     {
