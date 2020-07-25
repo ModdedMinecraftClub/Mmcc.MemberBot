@@ -42,7 +42,7 @@ namespace ModdedMinecraftClub.MemberBot.Bot
                 {
                     services.Configure<BotSettings>(context.Configuration.GetSection("BotSettings"));
                     
-                    services.AddTransient<IDatabaseConnectionService, DatabaseConnectionService>();
+                    services.AddScoped<IDatabaseConnectionService, DatabaseConnectionService>();
 
                     services.AddHostedService<StartupChecksHostedService>();
                     

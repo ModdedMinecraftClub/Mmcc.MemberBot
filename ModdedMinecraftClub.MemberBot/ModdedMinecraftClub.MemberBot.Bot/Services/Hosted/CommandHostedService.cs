@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -22,16 +23,24 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services.Hosted
         private readonly IServiceProvider _provider;
         private readonly IBotService _botService;
         private readonly CommandService _commandService;
-        private readonly IDatabaseConnectionService _databaseConnection;
         
-        public CommandHostedService(ILogger<CommandHostedService> logger, IServiceProvider provider, IBotService botService, CommandService commandService, IDatabaseConnectionService databaseConnection, IOptions<BotSettings> config)
+        public IServiceProvider Services { get; }
+
+        public CommandHostedService(
+            ILogger<CommandHostedService> logger,
+            IServiceProvider provider,
+            IBotService botService,
+            CommandService commandService,
+            IOptions<BotSettings> config,
+            IServiceProvider services
+            )
         {
             _logger = logger;
             _provider = provider;
             _botService = botService;
             _commandService = commandService;
-            _databaseConnection = databaseConnection;
             _config = config;
+            Services = services;
         }
         
         private Task LogCommand(LogMessage arg)
@@ -66,7 +75,6 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services.Hosted
             if (userMessage.Channel.Name.Equals(_config.Value.Discord.ChannelNames.MemberApps) && message.Attachments.Count != 0)
             {
                 var channel = userMessage.Channel;
-                
                 var app = new Application
                 {
                     AppStatus = ApplicationStatus.Pending,
@@ -78,11 +86,14 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services.Hosted
                     ImageUrl = userMessage.Attachments.First().Url
                 };
                 
-                await _databaseConnection.InsertNewApplicationAsync(app);
+                using (var scope = Services.CreateScope())
+                {
+                    var scopedDatabaseConn = scope.ServiceProvider.GetRequiredService<IDatabaseConnectionService>();
+                    await scopedDatabaseConn.InsertNewApplicationAsync(app);
+                }
                 
                 await channel.SendMessageAsync(
                     "Your application has been submitted and you will be pinged once it has been processed.");
-
                 return;
             }
             
