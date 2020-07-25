@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using ModdedMinecraftClub.MemberBot.Bot.Models;
@@ -9,11 +10,13 @@ namespace ModdedMinecraftClub.MemberBot.Bot.Services.Regular
 {
     public class DatabaseConnectionService : IDatabaseConnectionService
     {
+        private readonly ILogger<DatabaseConnectionService> _logger;
         private readonly MySqlConnection _connection;
         private readonly BotSettings _config;
 
-        public DatabaseConnectionService(IOptions<BotSettings> config)
+        public DatabaseConnectionService(ILogger<DatabaseConnectionService> logger, IOptions<BotSettings> config)
         {
+            _logger = logger;
             _config = config.Value;
             _connection = new MySqlConnection($"Server={_config.Mysql.ServerIp};Port={_config.Mysql.Port};Database={_config.Mysql.DatabaseName};Uid={_config.Mysql.Username};Pwd={_config.Mysql.Password};Allow User Variables=True");
         }
