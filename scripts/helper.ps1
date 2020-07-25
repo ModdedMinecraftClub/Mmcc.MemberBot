@@ -10,11 +10,11 @@ function Get-OutputLocation {
 function Build-Sc {    
     foreach ($platform in $platforms) {
         $output = Get-OutputLocation($platform)
-        dotnet publish $csprojLocation -r $platform --output $output
+        dotnet publish $csprojLocation -c Release -r $platform --output $output
     }
 }
 
 function Build-Portable {
     $output = Get-OutputLocation("portable-fxdependent")
-    dotnet publish $csprojLocation --output $output
+    dotnet publish $csprojLocation -c Release --output $output
 }
