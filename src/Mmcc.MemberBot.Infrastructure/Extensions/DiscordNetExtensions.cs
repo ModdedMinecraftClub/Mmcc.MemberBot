@@ -69,6 +69,17 @@ namespace Mmcc.MemberBot.Infrastructure.Extensions
             => textChannels.First(channel => channel.Name.Equals(channelName));
         
         /// <summary>
+        /// Finds a role by name.
+        ///
+        /// Returns null if no elements are found, throws an exception if more than one element is found.
+        /// </summary>
+        /// <param name="roles">IEnumerable of roles</param>
+        /// <param name="roleName">Role name</param>
+        /// <returns>Role with the given name</returns>
+        public static SocketRole FindRole(this IEnumerable<SocketRole> roles, string roleName)
+            => roles.SingleOrDefault(role => role.Name.Equals(roleName));
+        
+        /// <summary>
         /// Sends an Embed to this message channel.
         /// </summary>
         /// <param name="messageChannel">This message channel</param>
