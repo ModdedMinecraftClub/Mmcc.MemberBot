@@ -2,10 +2,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 using Mmcc.MemberBot.Core.Models;
+using Mmcc.MemberBot.Core.Models.Settings;
 
 namespace Mmcc.MemberBot.Infrastructure.Extensions
 {

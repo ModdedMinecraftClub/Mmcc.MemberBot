@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using Mmcc.MemberBot.Core.Interfaces;
 using Mmcc.MemberBot.Core.Models.Settings;
+using Mmcc.MemberBot.Infrastructure;
 using Mmcc.MemberBot.Infrastructure.Commands.Applications;
 using Mmcc.MemberBot.Infrastructure.HostedServices;
 using Mmcc.MemberBot.Infrastructure.Queries;
@@ -32,6 +33,7 @@ namespace Mmcc.MemberBot
                 .ConfigureAppConfiguration(builder =>
                 {
                     builder.AddJsonFile("appsettings.json", optional: false);
+                    builder.AddJsonFile("simplecommands.json", optional: true);
                 })
                 .ConfigureLogging((context, builder) =>
                 {
@@ -62,7 +64,9 @@ namespace Mmcc.MemberBot
                     services.AddSingleton(provider => provider.GetRequiredService<IOptions<DiscordSettings>>().Value);
                     services.Configure<PolychatSettings>(context.Configuration.GetSection("Polychat"));
                     services.AddSingleton(provider => provider.GetRequiredService<IOptions<PolychatSettings>>().Value);
-                    
+                    services.Configure<SimpleCommandsSettings>(context.Configuration.GetSection("SimpleCommands"));
+                    services.AddSingleton(provider => provider.GetRequiredService<IOptions<SimpleCommandsSettings>>().Value);
+
                     // add db connection;
                     services.AddTransient(provider =>
                     {
@@ -97,7 +101,18 @@ namespace Mmcc.MemberBot
                             DefaultRunMode = RunMode.Sync,
                             LogLevel = LogSeverity.Verbose
                         });
+                        
+                        // add modules;
                         commandService.AddModulesAsync(Assembly.GetEntryAssembly(), provider);
+                        
+                        // add simple commands;
+                        var simpleCommands = provider.GetService<SimpleCommandsSettings>()?.Commands;
+
+                        if (simpleCommands is not null)
+                        {
+                            commandService.AddSimpleCommands(simpleCommands);
+                        }
+                        
                         return commandService;
                     });
 

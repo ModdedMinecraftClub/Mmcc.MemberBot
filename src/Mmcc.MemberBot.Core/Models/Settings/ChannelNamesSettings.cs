@@ -3,6 +3,5 @@
     public class ChannelNamesSettings
     {
         public string MemberApps { get; set; }
-        public string Polychat { get; set; }
     }
 }
