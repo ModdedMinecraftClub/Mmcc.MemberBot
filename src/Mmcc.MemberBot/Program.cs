@@ -1,4 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net.Sockets;
+using System.Reflection;
+using System.Threading.Tasks;
+using Discord;
+using Discord.Commands;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,8 +10,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+using Mmcc.MemberBot.Core.Interfaces;
 using Mmcc.MemberBot.Core.Models.Settings;
-using Mmcc.MemberBot.Infrastructure.Commands;
+using Mmcc.MemberBot.Infrastructure.Commands.Applications;
+using Mmcc.MemberBot.Infrastructure.HostedServices;
+using Mmcc.MemberBot.Infrastructure.Queries;
+using Mmcc.MemberBot.Infrastructure.Services;
 using MySqlConnector;
 
 namespace Mmcc.MemberBot
@@ -52,6 +60,8 @@ namespace Mmcc.MemberBot
                     services.AddSingleton(provider => provider.GetRequiredService<IOptions<MySqlSettings>>().Value);
                     services.Configure<DiscordSettings>(context.Configuration.GetSection("Discord"));
                     services.AddSingleton(provider => provider.GetRequiredService<IOptions<DiscordSettings>>().Value);
+                    services.Configure<PolychatSettings>(context.Configuration.GetSection("Polychat"));
+                    services.AddSingleton(provider => provider.GetRequiredService<IOptions<PolychatSettings>>().Value);
                     
                     // add db connection;
                     services.AddTransient(provider =>
@@ -62,11 +72,40 @@ namespace Mmcc.MemberBot
                         return new MySqlConnection(connString);
                     });
                     
+                    // add TcpClient for communication with Polychat;
+                    services.AddSingleton(provider =>
+                    {
+                        var config = provider.GetRequiredService<PolychatSettings>();
+                        var tcpClient = new TcpClient(config.ServerIp, config.Port)
+                        {
+                            SendBufferSize = config.BufferSize
+                        };
+                        return tcpClient;
+                    });
+                    services.AddSingleton<ITcpCommunicationService, TcpCommunicationService>();
+                    
                     // add MediatR;
-                    services.AddMediatR(typeof(Program), typeof(CreateNewApplication));
+                    services.AddMediatR(typeof(Program), typeof(CreateNewApplication), typeof(DoesTableExist));
                     
+                    // add Discord services;
+                    services.AddSingleton<IBotService, BotHostedService>();
+                    services.AddSingleton(provider =>
+                    {
+                        var commandService = new CommandService(new CommandServiceConfig
+                        {
+                            CaseSensitiveCommands = false,
+                            DefaultRunMode = RunMode.Sync,
+                            LogLevel = LogSeverity.Verbose
+                        });
+                        commandService.AddModulesAsync(Assembly.GetEntryAssembly(), provider);
+                        return commandService;
+                    });
+
                     // add hosted services;
-                    
+                    services.AddHostedService<LifetimeEventsHostedService>();
+                    services.AddHostedService<StartupChecksHostedService>();
+                    services.AddHostedService(provider => provider.GetRequiredService<IBotService>());
+                    services.AddHostedService<CommandHostedService>();
                 });
 
             using var builtHost = host.Build();

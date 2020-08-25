@@ -8,7 +8,7 @@ using MediatR;
 using Mmcc.MemberBot.Core.Models;
 using MySqlConnector;
 
-namespace Mmcc.MemberBot.Infrastructure.Commands
+namespace Mmcc.MemberBot.Infrastructure.Commands.Applications
 {
     public class CreateNewApplication
     {

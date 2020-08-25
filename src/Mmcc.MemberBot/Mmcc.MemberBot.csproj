@@ -17,6 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Mmcc.MemberBot.Core\Mmcc.MemberBot.Core.csproj" />
     <ProjectReference Include="..\Mmcc.MemberBot.Infrastructure\Mmcc.MemberBot.Infrastructure.csproj" />
   </ItemGroup>

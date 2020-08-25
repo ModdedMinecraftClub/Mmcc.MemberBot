@@ -14,6 +14,7 @@ using Mmcc.MemberBot.Core.Interfaces;
 using Mmcc.MemberBot.Core.Models;
 using Mmcc.MemberBot.Core.Models.Settings;
 using Mmcc.MemberBot.Infrastructure.Commands;
+using Mmcc.MemberBot.Infrastructure.Commands.Applications;
 using Mmcc.MemberBot.Infrastructure.Extensions;
 
 namespace Mmcc.MemberBot.Infrastructure.HostedServices
@@ -119,18 +120,18 @@ namespace Mmcc.MemberBot.Infrastructure.HostedServices
                 });
         }
         
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             _commandService.Log += LogCommand;
-            await _commandService.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
             _botService.DiscordClient.MessageReceived += BotMessageReceivedAsync;
+            return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
             _botService.DiscordClient.MessageReceived -= BotMessageReceivedAsync;
             _botService.DiscordClient.Log -= LogCommand;
-            
+
             return Task.CompletedTask;
         }
     }
