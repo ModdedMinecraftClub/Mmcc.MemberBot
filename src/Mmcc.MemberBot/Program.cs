@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+using Mmcc.ApplicationParser;
 using Mmcc.MemberBot.Core.Interfaces;
 using Mmcc.MemberBot.Core.Models.Settings;
 using Mmcc.MemberBot.Infrastructure;
@@ -66,7 +67,10 @@ namespace Mmcc.MemberBot
                     services.AddSingleton(provider => provider.GetRequiredService<IOptions<PolychatSettings>>().Value);
                     services.Configure<SimpleCommandsSettings>(context.Configuration.GetSection("SimpleCommands"));
                     services.AddSingleton(provider => provider.GetRequiredService<IOptions<SimpleCommandsSettings>>().Value);
-
+                    
+                    // add application parser;
+                    services.AddSingleton(provider => new MmccApplicationSerializer(true));
+                    
                     // add db connection;
                     services.AddTransient(provider =>
                     {

@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Mmcc.ApplicationParser;
 using Mmcc.MemberBot.Core.Models;
 using Mmcc.MemberBot.Core.Models.Settings;
 using Mmcc.MemberBot.Infrastructure.Commands.Applications;
@@ -16,16 +19,19 @@ namespace Mmcc.MemberBot.Modules.Applications
         private readonly ILogger<ApproveApplicationsModule> _logger;
         private readonly IMediator _mediator;
         private readonly DiscordSettings _config;
+        private readonly MmccApplicationSerializer _serializer;
 
         public ApproveApplicationsModule(
             ILogger<ApproveApplicationsModule> logger,
             IMediator mediator,
-            DiscordSettings config
+            DiscordSettings config, 
+            MmccApplicationSerializer serializer
             )
         {
             _logger = logger;
             _mediator = mediator;
             _config = config;
+            _serializer = serializer;
         }
         
         [Command("approve", RunMode = RunMode.Async)]
@@ -38,12 +44,74 @@ namespace Mmcc.MemberBot.Modules.Applications
         }
 
         [Command("approve", RunMode = RunMode.Async)]
+        [Summary("Approves a particular application. Attempts to obtain the username and server prefix automatically via parsing.")]
+        [Priority(2)]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        public async Task ApproveAsync(int applicationId)
+        {
+            var app = await _mediator.Send(new GetApplicationById.Query {Id = applicationId});
+            
+            if (app is null)
+            {
+                await Context.Channel.SendMessageAsync($":x: Application with ID `{applicationId}` does not exist.");
+                return;
+            }
+            
+            // parse
+            DiscordApplication deserializedMsgContent;
+            try
+            {
+                deserializedMsgContent = _serializer.Deserialize<DiscordApplication>(app.MessageContent);
+            }
+            catch (Exception e)
+            {
+                await Context.Channel.SendMessageAsync(
+                    $":x: Could not obtain the username and server prefix from the message automatically via parsing.\n" +
+                    $"Exception: {e}\n\n" +
+                    $"**Please promote the player via `{_config.Prefix}approve <applicationId> <serverPrefix> <ign>`.**");
+                return;
+            }
+
+            var membersChannel = Context.Guild.TextChannels.FindChannel(_config.ChannelNames.MemberApps);
+            var memberRole = Context.Guild.Roles.FindMemberRole(deserializedMsgContent.Server);
+
+            if (memberRole is null)
+            {
+                await Context.Channel.SendMessageAsync($":x: Prefix `{deserializedMsgContent.Server}` does not exist.");
+                return;
+            }
+
+            var userToPromote = Context.Guild.Users.FindMemberAppAuthor(app.AuthorDiscordId);
+            
+            if (userToPromote is null)
+            {
+                await Context.Channel.SendMessageAsync(
+                    $":x: Cannot find a user with ID `{app.AuthorDiscordId}`. Please promote manually via `{_config.Prefix}approve <applicationId> manual` or reject the application.");
+                return;
+            }
+            
+            // promote;
+            var command = new Promote.Command
+            {
+                ServerPrefix = deserializedMsgContent.Server,
+                Ign = deserializedMsgContent.Ign,
+                ApplicationId = applicationId,
+                MemberRole = memberRole,
+                UserToPromote = userToPromote
+            };
+            await _mediator.Send(command);
+            
+            // notify;
+            await NotifyAboutApprovedApp(app, membersChannel);
+        }
+
+        [Command("approve", RunMode = RunMode.Async)]
         [Summary("Approves a particular application")]
         [Priority(1)]
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task ApproveAsync(int applicationId, string serverPrefix, string ign)
         {
-            var app = await _mediator.Send(new GetApplicationById.Query{Id = applicationId});
+            var app = await _mediator.Send(new GetApplicationById.Query {Id = applicationId});
             
             // validate;
             if (app is null)
@@ -66,7 +134,7 @@ namespace Mmcc.MemberBot.Modules.Applications
             if (userToPromote is null)
             {
                 await Context.Channel.SendMessageAsync(
-                    $":x: Cannot find a user with ID `{app.AuthorDiscordId}`. Please promote manually or reject the application.");
+                    $":x: Cannot find a user with ID `{app.AuthorDiscordId}`. Please promote manually via `{_config.Prefix}promote <applicationId> manual` or reject the application.");
                 return;
             }
             
@@ -82,20 +150,7 @@ namespace Mmcc.MemberBot.Modules.Applications
             await _mediator.Send(command);
             
             // notify;
-            
-            // notify the user that their app has been approved;
-            var userNotificationEmbed = new EmbedBuilder()
-                .WithTitle("Application approved")
-                .WithDescription($"Congratulations, your application has been approved.")
-                .WithApplicationStatusColour(ApplicationStatus.Approved)
-                .WithMmccLogo()
-                .AddField("Approved by", Context.Message.Author)
-                .Build();
-            await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}>", false, userNotificationEmbed);
-            
-            // notify the staff member that the app has been successfully approved;
-            await Context.Channel.SendMessageAsync(
-                $":white_check_mark: **Approved** application with ID: `{applicationId}`");
+            await NotifyAboutApprovedApp(app, membersChannel);
         }
         
         [Command("approve", RunMode = RunMode.Async)]
@@ -124,6 +179,23 @@ namespace Mmcc.MemberBot.Modules.Applications
                                                    ":one: Promote the player in-game via Polychat/MC\n" +
                                                    ":two: Give the player the appropriate Discord role\n" +
                                                    $":three: Let the player know in <#{membersChannel.Id}> that they've been promoted manually");
+        }
+
+        private async Task NotifyAboutApprovedApp(Application app, ISocketMessageChannel membersChannel)
+        {
+            // notify the user that their app has been approved;
+            var userNotificationEmbed = new EmbedBuilder()
+                .WithTitle("Application approved")
+                .WithDescription($"Congratulations, your application has been approved.")
+                .WithApplicationStatusColour(ApplicationStatus.Approved)
+                .WithMmccLogo()
+                .AddField("Approved by", Context.Message.Author)
+                .Build();
+            await membersChannel.SendMessageAsync($"<@{app.AuthorDiscordId}>", false, userNotificationEmbed);
+            
+            // notify the staff member that the app has been successfully approved;
+            await Context.Channel.SendMessageAsync(
+                $":white_check_mark: **Approved** application with ID: `{app.AppId}`");
         }
     }
 }
