@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Mmcc.MemberBot.Core.Models;
-using Mmcc.MemberBot.Core.Models.Settings;
 using Mmcc.MemberBot.Infrastructure.Extensions;
 
 namespace Mmcc.MemberBot.Infrastructure
 {
     public static class SimpleCommandsSetup
     {
-        public static async Task AddSimpleCommands(this CommandService commandService, IList<SimpleCommand> simpleCommands)
+        public static void AddSimpleCommands(this CommandService commandService, IList<SimpleCommand> simpleCommands)
         {
-            await commandService.CreateModuleAsync("", builder =>
+            commandService.CreateModuleAsync("", builder =>
             {
                 builder.WithSummary("Simple commands");
 
@@ -35,6 +33,7 @@ namespace Mmcc.MemberBot.Infrastructure
                     }, commandBuilder =>
                     {
                         commandBuilder
+                            .WithRunMode(RunMode.Async)
                             .WithName(cmd.Name)
                             .WithSummary(cmd.Summary);
                     });
