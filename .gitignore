@@ -11,3 +11,4 @@ obj/
 
 # Don't include any secrets
 secret_config.yml
+appsettings.json

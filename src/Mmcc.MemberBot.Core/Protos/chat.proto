@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package polychat;
+
+option java_package = "club.moddedminecraft.polychat.core.messagelibrary";
+option java_outer_classname = "ChatProtos";
+
+option csharp_namespace = "Mmcc.MemberBot.Core.Protos";
+
+message ChatMessage {
+    string serverId = 1;
+    string messageAuthor = 2;
+    string messageAuthorRank = 3;
+    string messageContent = 4;
+}

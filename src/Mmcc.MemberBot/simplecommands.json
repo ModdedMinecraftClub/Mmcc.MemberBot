@@ -1,0 +1,55 @@
+﻿{
+  "SimpleCommands": {
+    "Commands": [
+      {
+        "Name": "website",
+        "Summary": "Provides info about MMCC website",
+        "Title": "Website",
+        "Description": "Did you know that MMCC has a website with a lot of useful information?",
+        "Link": "https://moddedminecraft.club/"
+      },
+      {
+        "Name": "donate",
+        "Summary": "Provides info about how to donate to MMCC",
+        "Title": "Donate to MMCC",
+        "Description": "Modded Minecraft Club is expensive to run. We have a monthly dedicated server bill, along with a yearly domain fee and occasional miscellaneous expenses. As such, we accept donations through our store to keep the server alive.",
+        "Link": "https://moddedminecraft.club/store.php"
+      },
+      {
+        "Name": "forum",
+        "Summary": "Provides info about MMCC forum",
+        "Title": "Forum",
+        "Description": "Did you know that MMCC has a forum where you can look for a team, report issues and more?",
+        "Link": "https://forum.moddedminecraft.club/"
+      },
+      {
+        "Name": "stats",
+        "Summary": "Provides info about MMCC Stats/Poller",
+        "Title": "Stats",
+        "Description": "Did you know that MMCC has a web app where you can check out statistics such as player count and TPS for each of the servers?",
+        "Link": "https://poller.moddedminecraft.club/"
+      },
+      {
+        "Name": "wiki",
+        "Summary": "Provides info about MMCC wiki",
+        "Title": "Wiki",
+        "Description": "Did you know that MMCC has a wiki where you can find most important information about the server, as well as answers to common questions?",
+        "Link": "https://wiki.moddedminecraft.club/"
+      },
+      {
+        "Name": "claiming",
+        "Summary": "Provides info about how to claim land on MMCC servers",
+        "Title": "Land claiming",
+        "Description": "Learn how to claim land on the server at the link below.",
+        "Link": "https://wiki.moddedminecraft.club/index.php?title=Claiming"
+      },
+      {
+        "Name": "rules",
+        "Summary": "Provides info about server rules",
+        "Title": "Server rules",
+        "Description": "In order to keep Modded Minecraft Club a more orderly, calm, and happy place, we have instituted several rules. These rules are what we believe to be the minimum required to create a community of the type we intend to create. You can learn about the rules at the link below.",
+        "Link": "https://wiki.moddedminecraft.club/index.php?title=Rules"
+      }
+    ]
+  }
+}
