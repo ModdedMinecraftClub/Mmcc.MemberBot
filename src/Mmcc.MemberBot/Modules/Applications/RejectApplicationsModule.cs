@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.MemberBot.Core.Models;
 using Mmcc.MemberBot.Core.Models.Settings;
+using Mmcc.MemberBot.Infrastructure;
 using Mmcc.MemberBot.Infrastructure.Commands.Applications;
 using Mmcc.MemberBot.Infrastructure.Extensions;
 using Mmcc.MemberBot.Infrastructure.Queries.Applications;
@@ -29,8 +30,11 @@ namespace Mmcc.MemberBot.Modules.Applications
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task RejectAsync()
         {
-            const string msg = ":x: Incorrect arguments.\nUsage: `reject <application id> <reason>`";
-            await Context.Channel.SendMessageAsync(msg);
+            var embed = new IncorrectArgsEmbedBuilder()
+                .WithStandardIncorrectArgsEmbedLayout()
+                .WithUsageField($"{_config.Prefix}reject <applicationId> <reason>")
+                .Build();
+            await Context.Channel.SendEmbedAsync(embed);
         }
 
         [Command("reject", RunMode = RunMode.Async)]
@@ -44,7 +48,11 @@ namespace Mmcc.MemberBot.Modules.Applications
 
             if (app is null)
             {
-                await Context.Channel.SendMessageAsync($":x: Application with ID `{applicationId}` does not exist.");
+                var errorEmbed = new ErrorEmbedBuilder()
+                    .WithStandardErrorEmbedLayout()
+                    .WithErrorMessage($"Application with ID `{applicationId}` does not exist.")
+                    .Build();
+                await Context.Channel.SendEmbedAsync(errorEmbed);
                 return;
             }
             

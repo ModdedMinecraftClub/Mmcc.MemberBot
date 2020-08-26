@@ -57,6 +57,9 @@ namespace Mmcc.MemberBot.Infrastructure.Extensions
         public static SocketRole FindMemberRole(this IEnumerable<SocketRole> roles, string serverPrefix)
             => roles.SingleOrDefault(role => role.Name.Contains($"[{serverPrefix.ToUpper()}]"));
 
+        public static SocketRole FindMemberRoleContains(this IEnumerable<SocketRole> roles, string server)
+            => roles.SingleOrDefault(role => role.Name.Contains(server));
+
         /// <summary>
         /// Finds a channel by name.
         ///

@@ -5,6 +5,8 @@ using Discord.Commands;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.MemberBot.Core.Models;
+using Mmcc.MemberBot.Core.Models.Settings;
+using Mmcc.MemberBot.Infrastructure;
 using Mmcc.MemberBot.Infrastructure.Extensions;
 using Mmcc.MemberBot.Infrastructure.Queries.Applications;
 
@@ -14,15 +16,33 @@ namespace Mmcc.MemberBot.Modules.Applications
     {
         private readonly ILogger<ViewApplicationsModule> _logger;
         private readonly IMediator _mediator;
+        private readonly DiscordSettings _config;
 
-        public ViewApplicationsModule(ILogger<ViewApplicationsModule> logger, IMediator mediator)
+        public ViewApplicationsModule(
+            ILogger<ViewApplicationsModule> logger,
+            IMediator mediator,
+            DiscordSettings config
+            )
         {
             _logger = logger;
             _mediator = mediator;
+            _config = config;
         }
 
         [Command("view", RunMode = RunMode.Async)]
+        [Priority(-1)]
+        public async Task ViewAsync()
+        {
+            var embed = new IncorrectArgsEmbedBuilder()
+                .WithStandardIncorrectArgsEmbedLayout()
+                .WithUsageField($"{_config.Prefix}view <applicationId>")
+                .Build();
+            await Context.Channel.SendEmbedAsync(embed);
+        }
+        
+        [Command("view", RunMode = RunMode.Async)]
         [Summary("Shows a particular application")]
+        [Priority(1)]
         public async Task ViewAsync(int applicationId)
         {
             var query = new GetApplicationById.Query
@@ -33,7 +53,11 @@ namespace Mmcc.MemberBot.Modules.Applications
 
             if (app is null)
             {
-                await Context.Channel.SendMessageAsync($":x: Application with ID `{applicationId}` does not exist.");
+                var errorEmbed = new ErrorEmbedBuilder()
+                    .WithStandardErrorEmbedLayout()
+                    .WithErrorMessage("Application with ID `{applicationId}` does not exist.")
+                    .Build();
+                await Context.Channel.SendEmbedAsync(errorEmbed);
                 return;
             }
 

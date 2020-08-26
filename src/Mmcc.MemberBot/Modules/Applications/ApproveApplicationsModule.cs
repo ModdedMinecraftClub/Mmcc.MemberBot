@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Mmcc.ApplicationParser;
 using Mmcc.MemberBot.Core.Models;
 using Mmcc.MemberBot.Core.Models.Settings;
+using Mmcc.MemberBot.Infrastructure;
 using Mmcc.MemberBot.Infrastructure.Commands.Applications;
 using Mmcc.MemberBot.Infrastructure.Extensions;
 using Mmcc.MemberBot.Infrastructure.Queries.Applications;
@@ -39,8 +41,18 @@ namespace Mmcc.MemberBot.Modules.Applications
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task ApproveAsync()
         {
-            const string msg = ":x: Incorrect arguments.\nUsage: `approve <application id> <server prefix> <ign>`\nAlternative usage: `approve <application id> manual`";
-            await Context.Channel.SendMessageAsync(msg);
+            var alternativeUsages = new List<string>
+            {
+                $"{_config.Prefix}approve <applicationId> <serverPrefix> <ign>",
+                $"{_config.Prefix}approve <applicationId> manual"
+            };
+            
+            var embed = new IncorrectArgsEmbedBuilder()
+                .WithStandardIncorrectArgsEmbedLayout()
+                .WithUsageField($"{_config.Prefix}approve <applicationId>")
+                .WithAlternativeUsages(alternativeUsages)
+                .Build();
+            await Context.Channel.SendEmbedAsync(embed);
         }
 
         [Command("approve", RunMode = RunMode.Async)]
@@ -53,7 +65,11 @@ namespace Mmcc.MemberBot.Modules.Applications
             
             if (app is null)
             {
-                await Context.Channel.SendMessageAsync($":x: Application with ID `{applicationId}` does not exist.");
+                var embed = new ErrorEmbedBuilder()
+                    .WithStandardErrorEmbedLayout()
+                    .WithErrorMessage($"Application with ID `{applicationId}` does not exist.")
+                    .Build();
+                await Context.Channel.SendEmbedAsync(embed);
                 return;
             }
             
@@ -65,19 +81,27 @@ namespace Mmcc.MemberBot.Modules.Applications
             }
             catch (Exception e)
             {
-                await Context.Channel.SendMessageAsync(
-                    $":x: Could not obtain the username and server prefix from the message automatically via parsing.\n" +
-                    $"Exception: {e}\n\n" +
-                    $"**Please promote the player via `{_config.Prefix}approve <applicationId> <serverPrefix> <ign>`.**");
+                var embed = new ErrorEmbedBuilder()
+                    .WithStandardErrorEmbedLayout()
+                    .WithErrorMessage("Could not obtain the username and server prefix from the message automatically via parsing.")
+                    .WithException(e)
+                    .WithHowToDealWithThisErrorField($"Please promote the player via `{_config.Prefix}approve <applicationId> <serverPrefix> <ign>`.")
+                    .Build();
+                await Context.Channel.SendEmbedAsync(embed);
                 return;
             }
 
             var membersChannel = Context.Guild.TextChannels.FindChannel(_config.ChannelNames.MemberApps);
-            var memberRole = Context.Guild.Roles.FindMemberRole(deserializedMsgContent.Server);
+            var memberRole = Context.Guild.Roles.FindMemberRoleContains(deserializedMsgContent.Server);
 
             if (memberRole is null)
             {
-                await Context.Channel.SendMessageAsync($":x: Prefix `{deserializedMsgContent.Server}` does not exist.");
+                var embed = new ErrorEmbedBuilder()
+                    .WithStandardErrorEmbedLayout()
+                    .WithErrorMessage($"Could not figure out which Discord role belongs to the server given by the user.\nGiven server: {deserializedMsgContent.Server}")
+                    .WithHowToDealWithThisErrorField($"Please promote the player via `{_config.Prefix}approve <applicationId> <serverPrefix> <ign>`.")
+                    .Build();
+                await Context.Channel.SendEmbedAsync(embed);
                 return;
             }
 
@@ -85,8 +109,12 @@ namespace Mmcc.MemberBot.Modules.Applications
             
             if (userToPromote is null)
             {
-                await Context.Channel.SendMessageAsync(
-                    $":x: Cannot find a user with ID `{app.AuthorDiscordId}`. Please promote manually via `{_config.Prefix}approve <applicationId> manual` or reject the application.");
+                var embed = new ErrorEmbedBuilder()
+                    .WithStandardErrorEmbedLayout()
+                    .WithErrorMessage("Cannot find a user with ID `{app.AuthorDiscordId}`.")
+                    .WithHowToDealWithThisErrorField($"Please promote manually via `{_config.Prefix}approve <applicationId> manual` or reject the application.")
+                    .Build();
+                await Context.Channel.SendEmbedAsync(embed);
                 return;
             }
             
@@ -116,7 +144,11 @@ namespace Mmcc.MemberBot.Modules.Applications
             // validate;
             if (app is null)
             {
-                await Context.Channel.SendMessageAsync($":x: Application with ID `{applicationId}` does not exist.");
+                var embed = new ErrorEmbedBuilder()
+                    .WithStandardErrorEmbedLayout()
+                    .WithErrorMessage($"Application with ID `{applicationId}` does not exist.")
+                    .Build();
+                await Context.Channel.SendEmbedAsync(embed);
                 return;
             }
             
@@ -125,7 +157,11 @@ namespace Mmcc.MemberBot.Modules.Applications
 
             if (memberRole is null)
             {
-                await Context.Channel.SendMessageAsync($":x: Prefix `{serverPrefix}` does not exist.");
+                var embed = new ErrorEmbedBuilder()
+                    .WithStandardErrorEmbedLayout()
+                    .WithErrorMessage($"Prefix `{serverPrefix}` does not exist.")
+                    .Build();
+                await Context.Channel.SendEmbedAsync(embed);
                 return;
             }
 
@@ -133,8 +169,12 @@ namespace Mmcc.MemberBot.Modules.Applications
             
             if (userToPromote is null)
             {
-                await Context.Channel.SendMessageAsync(
-                    $":x: Cannot find a user with ID `{app.AuthorDiscordId}`. Please promote manually via `{_config.Prefix}promote <applicationId> manual` or reject the application.");
+                var embed = new ErrorEmbedBuilder()
+                    .WithStandardErrorEmbedLayout()
+                    .WithErrorMessage($"Cannot find a user with ID `{app.AuthorDiscordId}`.")
+                    .WithHowToDealWithThisErrorField($"Please promote manually via `{_config.Prefix}promote <applicationId> manual` or reject the application.")
+                    .Build();
+                await Context.Channel.SendEmbedAsync(embed);
                 return;
             }
             
@@ -161,7 +201,7 @@ namespace Mmcc.MemberBot.Modules.Applications
         {
             if (!manual.Equals("manual"))
             {
-                await Context.Channel.SendMessageAsync(":x: Incorrect arguments.\nUsage: `approve <application id> <server prefix> <ign>`\nAlternative usage: `approve <application id> manual`");
+                await ApproveAsync();
                 return;
             }
             

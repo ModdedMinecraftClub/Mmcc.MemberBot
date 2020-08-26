@@ -115,7 +115,11 @@ namespace Mmcc.MemberBot.Infrastructure.HostedServices
 
                     if (result.Error.HasValue)
                     {
-                        await message.Channel.SendMessageAsync($":x: Error: {result.Error.Value}, {result.ErrorReason}");
+                        var embed = new ErrorEmbedBuilder()
+                            .WithStandardErrorEmbedLayout()
+                            .WithErrorMessage($"{result.Error.Value}; {result.ErrorReason}")
+                            .Build();
+                        await message.Channel.SendEmbedAsync(embed);
                     }
                 });
         }
