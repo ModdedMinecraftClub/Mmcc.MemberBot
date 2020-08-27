@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -73,7 +74,7 @@ namespace Mmcc.MemberBot.Modules.Applications
                 return;
             }
             
-            // parse
+            // parse;
             DiscordApplication deserializedMsgContent;
             try
             {
@@ -127,8 +128,22 @@ namespace Mmcc.MemberBot.Modules.Applications
                 MemberRole = memberRole,
                 UserToPromote = userToPromote
             };
-            await _mediator.Send(command);
-            
+
+            try
+            {
+                await _mediator.Send(command);
+            }
+            catch (IOException ioException)
+            {
+                var ioExEmbed = new ErrorEmbedBuilder()
+                    .WithStandardErrorEmbedLayout()
+                    .WithErrorMessage("Could not send the message to Polychat. Is Polychat online?")
+                    .WithException(ioException)
+                    .Build();
+                await Context.Channel.SendEmbedAsync(ioExEmbed);
+                return;
+            }
+
             // notify;
             await NotifyAboutApprovedApp(app, membersChannel);
         }
@@ -187,7 +202,20 @@ namespace Mmcc.MemberBot.Modules.Applications
                 MemberRole = memberRole,
                 UserToPromote = userToPromote
             };
-            await _mediator.Send(command);
+            try
+            {
+                await _mediator.Send(command);
+            }
+            catch (IOException ioException)
+            {
+                var ioExEmbed = new ErrorEmbedBuilder()
+                    .WithStandardErrorEmbedLayout()
+                    .WithErrorMessage("Could not send the message to Polychat. Is Polychat online?")
+                    .WithException(ioException)
+                    .Build();
+                await Context.Channel.SendEmbedAsync(ioExEmbed);
+                return;
+            }
             
             // notify;
             await NotifyAboutApprovedApp(app, membersChannel);
