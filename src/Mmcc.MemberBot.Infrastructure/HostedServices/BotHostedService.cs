@@ -29,7 +29,15 @@ namespace Mmcc.MemberBot.Infrastructure.HostedServices
             _logger = logger;
             _applicationLifetime = applicationLifetime;
             
-            DiscordClient = new DiscordSocketClient();
+            //configure intents
+            var socketConfig = new DiscordSocketConfig
+            {
+                AlwaysDownloadUsers = true,
+                GatewayIntents = 
+                    GatewayIntents.Guilds | GatewayIntents.GuildEmojis | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions 
+            };
+            
+            DiscordClient = new DiscordSocketClient(socketConfig);
         }
         
         public void ExecuteHandlerAsynchronously<TReturn>(Func<DiscordSocketClient, Task<TReturn>> handler, Action<TReturn> callback)
