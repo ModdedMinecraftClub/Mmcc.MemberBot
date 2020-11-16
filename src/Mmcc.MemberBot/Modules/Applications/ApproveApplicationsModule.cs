@@ -105,8 +105,10 @@ namespace Mmcc.MemberBot.Modules.Applications
                 await Context.Channel.SendEmbedAsync(embed);
                 return;
             }
-
+            
             var userToPromote = Context.Guild.Users.FindMemberAppAuthor(app.AuthorDiscordId);
+            var roleName = memberRole.Name;
+            var serverPrefix = roleName.Substring(roleName.IndexOf('[') + 1, roleName.LastIndexOf(']') - 1);
             
             if (userToPromote is null)
             {
@@ -122,7 +124,7 @@ namespace Mmcc.MemberBot.Modules.Applications
             // promote;
             var command = new Promote.Command
             {
-                ServerPrefix = deserializedMsgContent.Server,
+                ServerPrefix = serverPrefix,
                 Ign = deserializedMsgContent.Ign,
                 ApplicationId = applicationId,
                 MemberRole = memberRole,
