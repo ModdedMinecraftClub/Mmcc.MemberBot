@@ -1,6 +1,5 @@
 # MMCC Member Bot
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](https://github.com/ModdedMinecraftClub/mmcc-member-bot/blob/master/LICENSE)
-![OS](https://img.shields.io/badge/platform-linux%20%7C%20windows-orange?style=flat-square)
 [![Framework](https://img.shields.io/badge/framework-.NET%205-blueviolet?style=flat-square)](https://dotnet.microsoft.com/download)
 
 A Discord bot for managing MMCC Member Applications.
