@@ -16,7 +16,7 @@ using Mmcc.MemberBot.Core.Models.Settings;
 using Mmcc.MemberBot.Infrastructure;
 using Mmcc.MemberBot.Infrastructure.Commands.Applications;
 using Mmcc.MemberBot.Infrastructure.HostedServices;
-using Mmcc.MemberBot.Infrastructure.Queries;
+using Mmcc.MemberBot.Infrastructure.Queries.Applications;
 using Mmcc.MemberBot.Infrastructure.Services;
 using MySqlConnector;
 
@@ -93,7 +93,7 @@ namespace Mmcc.MemberBot
                     services.AddSingleton<ITcpCommunicationService, TcpCommunicationService>();
                     
                     // add MediatR;
-                    services.AddMediatR(typeof(Program), typeof(CreateNewApplication), typeof(DoesTableExist));
+                    services.AddMediatR(typeof(Program), typeof(CreateNewApplication), typeof(GetApplicationById));
                     
                     // add Discord services;
                     services.AddSingleton<IBotService, BotHostedService>();
@@ -122,7 +122,6 @@ namespace Mmcc.MemberBot
 
                     // add hosted services;
                     services.AddHostedService<LifetimeEventsHostedService>();
-                    services.AddHostedService<StartupChecksHostedService>();
                     services.AddHostedService(provider => provider.GetRequiredService<IBotService>());
                     services.AddHostedService<CommandHostedService>();
                 });
