@@ -38,7 +38,7 @@ namespace Mmcc.MemberBot.Infrastructure.Commands.Applications
                     ServerId = request.ServerPrefix,
                     Username = request.Ign
                 };
-                await _tcpService.SendPromoteMemberCommand(polychatCommand);
+                await _tcpService.SendMessage(polychatCommand);
             
                 // add role;
                 await request.UserToPromote.AddRoleAsync(request.MemberRole);

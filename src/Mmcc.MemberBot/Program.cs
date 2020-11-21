@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using Mmcc.ApplicationParser;
 using Mmcc.MemberBot.Core.Interfaces;
+using Mmcc.MemberBot.Core.Models;
 using Mmcc.MemberBot.Core.Models.Settings;
 using Mmcc.MemberBot.Infrastructure;
 using Mmcc.MemberBot.Infrastructure.Commands.Applications;
@@ -81,7 +82,7 @@ namespace Mmcc.MemberBot
                     });
                     
                     // add TcpClient for communication with Polychat;
-                    services.AddSingleton(provider =>
+                    services.AddTransient(provider =>
                     {
                         var config = provider.GetRequiredService<PolychatSettings>();
                         var tcpClient = new TcpClient(config.ServerIp, config.Port)
@@ -90,7 +91,7 @@ namespace Mmcc.MemberBot
                         };
                         return tcpClient;
                     });
-                    services.AddSingleton<ITcpCommunicationService, TcpCommunicationService>();
+                    services.AddTransient<ITcpCommunicationService, TcpCommunicationService>();
                     
                     // add MediatR;
                     services.AddMediatR(typeof(Program), typeof(CreateNewApplication), typeof(GetApplicationById));
@@ -119,6 +120,7 @@ namespace Mmcc.MemberBot
                         
                         return commandService;
                     });
+                    services.AddTransient<IModerationService, ModerationService>();
 
                     // add hosted services;
                     services.AddHostedService<LifetimeEventsHostedService>();

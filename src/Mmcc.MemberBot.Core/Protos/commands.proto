@@ -26,3 +26,16 @@ message PromoteMemberCommand {
     string serverId = 1;
     string username = 2;
 }
+
+message ModerationCommand {
+    ModerationCommandType type = 1;
+    string username = 2;
+    string reason = 3;
+    
+    enum ModerationCommandType {
+        UNKNOWN = 0;
+        WARN = 1;
+        BAN = 2;
+        UNBAN = 3;
+    }
+}

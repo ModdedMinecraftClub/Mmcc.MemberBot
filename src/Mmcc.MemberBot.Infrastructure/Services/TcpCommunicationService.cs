@@ -22,10 +22,10 @@ namespace Mmcc.MemberBot.Infrastructure.Services
             _tcpClient = tcpClient;
         }
 
-        public async Task SendPromoteMemberCommand(PromoteMemberCommand command)
+        public async Task SendMessage(IMessage message)
         {
             var stream = _tcpClient.GetStream();
-            var packedMsg = Any.Pack(command);
+            var packedMsg = Any.Pack(message);
             var lengthArrayBuffer = new byte[4];
             var msgBytes = packedMsg.ToByteArray();
 
