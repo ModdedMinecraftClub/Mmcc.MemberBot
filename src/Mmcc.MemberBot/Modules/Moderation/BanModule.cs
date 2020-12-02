@@ -88,5 +88,48 @@ namespace Mmcc.MemberBot.Modules.Moderation
             // notify staff
             await _moderationService.SendSuccessStaffNotification(Context.Channel, mEvent);
         }
+
+
+        [Command("ban", RunMode = RunMode.Async)]
+        [Summary("Bans a certain user. Discord only.")]
+        [Priority(2)]
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        public async Task BanAsync(IGuildUser user, string duration, string reason)
+        {
+            DateTime? expiryDate;
+            if (duration.ToLower().Equals("<perm>"))
+            {
+                expiryDate = null;
+            }
+            else
+            {
+                // parse duration
+                var timeSpan = await _moderationService.HandleDuration(Context.Channel, duration);
+                if (timeSpan is null) return;
+                // create expiry date
+                expiryDate = DateTime.UtcNow + timeSpan.Value;
+            }
+
+            // create moderation event
+            var mEvent = new ModerationEvent
+            {
+                Type = ModerationEventType.Ban,
+                Active = true,
+                ExpiryDateUtc = expiryDate,
+                DiscordId = user.Id,
+                Ign = null,
+                Reason = reason
+            };
+            
+            // ban from Discord
+            await Context.Guild.AddBanAsync(user, 0, reason);
+            
+            // insert into DB
+            var command = new InsertNewModerationEvent.Command{ModerationEvent = mEvent};
+            await _mediator.Send(command);
+            
+            // notify staff
+            await _moderationService.SendSuccessStaffNotification(Context.Channel, mEvent);
+        }
     }
 }
