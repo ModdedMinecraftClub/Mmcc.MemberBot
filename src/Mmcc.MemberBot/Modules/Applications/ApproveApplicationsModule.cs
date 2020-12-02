@@ -105,8 +105,8 @@ namespace Mmcc.MemberBot.Modules.Applications
                 await Context.Channel.SendEmbedAsync(embed);
                 return;
             }
-            
-            var userToPromote = Context.Guild.Users.FindMemberAppAuthor(app.AuthorDiscordId);
+
+            var userToPromote = await Context.Client.Rest.GetGuildUserAsync(Context.Guild.Id, app.AuthorDiscordId);
             var roleName = memberRole.Name;
             var serverPrefix = roleName.Substring(roleName.IndexOf('[') + 1, roleName.LastIndexOf(']') - 1);
             
@@ -114,7 +114,7 @@ namespace Mmcc.MemberBot.Modules.Applications
             {
                 var embed = new ErrorEmbedBuilder()
                     .WithStandardErrorEmbedLayout()
-                    .WithErrorMessage("Cannot find a user with ID `{app.AuthorDiscordId}`.")
+                    .WithErrorMessage($"Cannot find a user with ID `{app.AuthorDiscordId}`.")
                     .WithHowToDealWithThisErrorField($"Please promote manually via `{_config.Prefix}approve <applicationId> manual` or reject the application.")
                     .Build();
                 await Context.Channel.SendEmbedAsync(embed);
@@ -182,7 +182,7 @@ namespace Mmcc.MemberBot.Modules.Applications
                 return;
             }
 
-            var userToPromote = Context.Guild.Users.FindMemberAppAuthor(app.AuthorDiscordId);
+            var userToPromote = await Context.Client.Rest.GetGuildUserAsync(Context.Guild.Id, app.AuthorDiscordId);
             
             if (userToPromote is null)
             {
