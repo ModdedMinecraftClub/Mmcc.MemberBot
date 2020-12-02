@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Discord;
 using Discord.WebSocket;
 using MediatR;
 using Mmcc.MemberBot.Core.Interfaces;
@@ -15,8 +16,8 @@ namespace Mmcc.MemberBot.Infrastructure.Commands.Applications
             public string ServerPrefix { get; set; }
             public string Ign { get; set; }
             public int ApplicationId { get; set; }
-            public SocketGuildUser UserToPromote { get; set; }
-            public SocketRole MemberRole { get; set; }
+            public IGuildUser UserToPromote { get; set; }
+            public IRole MemberRole { get; set; }
         }
 
         public class Handler : AsyncRequestHandler<Command>

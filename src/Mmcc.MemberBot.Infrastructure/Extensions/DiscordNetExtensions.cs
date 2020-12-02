@@ -36,17 +36,6 @@ namespace Mmcc.MemberBot.Infrastructure.Extensions
         }
         
         /// <summary>
-        /// Finds an author of an application.
-        ///
-        /// Returns null if not found, throws an exception if more than one element is found.
-        /// </summary>
-        /// <param name="users">IEnumerable of users</param>
-        /// <param name="app">Member application</param>
-        /// <returns>Author of an application</returns>
-        public static SocketGuildUser FindMemberAppAuthor(this IEnumerable<SocketGuildUser> users, ulong authorDiscordId)
-            => users.SingleOrDefault(user => user.Id == authorDiscordId);
-        
-        /// <summary>
         /// Finds member role for a given MC server.
         ///
         /// Returns null if not found, throws an exception if more than one element is found.
