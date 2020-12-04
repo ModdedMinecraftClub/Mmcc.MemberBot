@@ -170,7 +170,8 @@ namespace Mmcc.MemberBot.Modules
                 return;
             }
 
-            var cmd = new ApproveManually.Command {ApplicationId = applicationId};
+            var cmd = new ChangeStatusSimple.Command
+                {ApplicationId = applicationId, NewStatus = ApplicationStatus.Approved};
             var cmdResult = await _mediator.Send(cmd);
 
             if (cmdResult.Succeeded)
@@ -210,7 +211,8 @@ namespace Mmcc.MemberBot.Modules
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task RejectAsync(int applicationId, [Remainder] string reason)
         {
-            var cmd = new Reject.Command {ApplicationId = applicationId};
+            var cmd = new ChangeStatusSimple.Command
+                {ApplicationId = applicationId, NewStatus = ApplicationStatus.Rejected};
             var cmdResult = await _mediator.Send(cmd);
 
             if (cmdResult.Succeeded)
