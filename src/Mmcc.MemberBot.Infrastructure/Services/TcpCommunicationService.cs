@@ -33,17 +33,8 @@ namespace Mmcc.MemberBot.Infrastructure.Services
 
             BinaryPrimitives.WriteInt32BigEndian(lengthArrayBuffer.AsSpan(), msgBytes.Length);
             
-            var arr = CombineBytes(lengthArrayBuffer, msgBytes);
-            
-            await stream.WriteAsync(arr);
-        }
-        
-        private byte[] CombineBytes(IEnumerable<byte> a, IEnumerable<byte> b)
-        {
-            var list = new List<byte>();
-            list.AddRange(a);
-            list.AddRange(b);
-            return list.ToArray();
+            await stream.WriteAsync(lengthArrayBuffer);
+            await stream.WriteAsync(msgBytes);
         }
     }
 }
