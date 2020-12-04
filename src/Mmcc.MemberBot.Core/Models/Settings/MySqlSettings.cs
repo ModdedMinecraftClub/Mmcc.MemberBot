@@ -2,10 +2,10 @@
 {
     public class MySqlSettings
     {
-        public string ServerIp { get; set; }
+        public string ServerIp { get; set; } = null!;
         public int Port { get; set; }
-        public string DatabaseName { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string DatabaseName { get; set; } = null!;
+        public string Username { get; set; } = null!;
+        public string Password { get; set; } = null!;
     }
 }

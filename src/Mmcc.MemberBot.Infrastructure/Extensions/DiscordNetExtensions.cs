@@ -43,10 +43,10 @@ namespace Mmcc.MemberBot.Infrastructure.Extensions
         /// <param name="roles">IEnumerable of roles</param>
         /// <param name="serverPrefix">Prefix of the MC server</param>
         /// <returns>Member role for a given MC server</returns>
-        public static SocketRole FindMemberRole(this IEnumerable<SocketRole> roles, string serverPrefix)
+        public static SocketRole? FindMemberRole(this IEnumerable<SocketRole> roles, string serverPrefix)
             => roles.SingleOrDefault(role => role.Name.Contains($"[{serverPrefix.ToUpper()}]"));
 
-        public static SocketRole FindMemberRoleContains(this IEnumerable<SocketRole> roles, string server)
+        public static SocketRole? FindMemberRoleContains(this IEnumerable<SocketRole> roles, string server)
             => roles.SingleOrDefault(role => role.Name.Contains(server));
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Mmcc.MemberBot.Infrastructure.Extensions
         /// <param name="roles">IEnumerable of roles</param>
         /// <param name="roleName">Role name</param>
         /// <returns>Role with the given name</returns>
-        public static SocketRole FindRole(this IEnumerable<SocketRole> roles, string roleName)
+        public static SocketRole? FindRole(this IEnumerable<SocketRole> roles, string roleName)
             => roles.SingleOrDefault(role => role.Name.Equals(roleName));
         
         /// <summary>

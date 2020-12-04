@@ -3,9 +3,9 @@
     public class DiscordSettings
     {
         public char Prefix { get; set; }
-        public string Token { get; set; }
-        public string InviteUrl { get; set; }
-        public ChannelNamesSettings ChannelNames { get; set; }
-        public RoleNamesSettings RoleNames { get; set; }
+        public string Token { get; set; } = null!;
+        public string InviteUrl { get; set; } = null!;
+        public ChannelNamesSettings ChannelNames { get; set; } = null!;
+        public RoleNamesSettings RoleNames { get; set; } = null!;
     }
 }

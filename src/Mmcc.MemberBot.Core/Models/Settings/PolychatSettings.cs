@@ -2,7 +2,7 @@
 {
     public class PolychatSettings
     {
-        public string ServerIp { get; set; }
+        public string ServerIp { get; set; } = null!;
         public int Port { get; set; }
         public int BufferSize { get; set; }
     }

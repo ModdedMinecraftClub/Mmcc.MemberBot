@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
@@ -11,9 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Mmcc.MemberBot.Core.Interfaces;
-using Mmcc.MemberBot.Core.Models;
 using Mmcc.MemberBot.Core.Models.Settings;
-using Mmcc.MemberBot.Infrastructure.Commands;
 using Mmcc.MemberBot.Infrastructure.Commands.Applications;
 using Mmcc.MemberBot.Infrastructure.Extensions;
 
@@ -82,7 +78,7 @@ namespace Mmcc.MemberBot.Infrastructure.HostedServices
                 using (var scope = Services.CreateScope())
                 {
                     var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                    await mediator.Send(new CreateNewApplication.Command{UserMessage = userMessage});
+                    await mediator.Send(new CreateFromUserMsg.Command {UserMessage = userMessage});
                 }
                 
                 await channel.SendMessageAsync(

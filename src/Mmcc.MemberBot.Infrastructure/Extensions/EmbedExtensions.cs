@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Discord;
+using Mmcc.MemberBot.Core;
 using Mmcc.MemberBot.Core.Models;
 
 namespace Mmcc.MemberBot.Infrastructure.Extensions
@@ -42,6 +43,15 @@ namespace Mmcc.MemberBot.Infrastructure.Extensions
             }
 
             return builder;
+        }
+
+        public static Embed ToErrorEmbed<T>(this CommandResult<T> result)
+        {
+            var eb = new ErrorEmbedBuilder()
+                .WithStandardErrorEmbedLayout()
+                .WithErrorMessage(result.FailureReason!);
+
+            return eb.Build();
         }
     }
 }
