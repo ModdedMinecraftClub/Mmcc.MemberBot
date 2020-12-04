@@ -4,21 +4,19 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
-using Mmcc.ApplicationParser;
+using Mmcc.MemberBot.Core;
 using Mmcc.MemberBot.Core.Interfaces;
 using Mmcc.MemberBot.Core.Models.Settings;
 using Mmcc.MemberBot.Infrastructure;
 using Mmcc.MemberBot.Infrastructure.Commands.Applications;
 using Mmcc.MemberBot.Infrastructure.HostedServices;
-using Mmcc.MemberBot.Infrastructure.Queries;
 using Mmcc.MemberBot.Infrastructure.Services;
-using MySqlConnector;
 
 namespace Mmcc.MemberBot
 {
@@ -45,14 +43,8 @@ namespace Mmcc.MemberBot
                         builder.AddDebug();
                     }
 
-                    builder.AddConsole(o =>
+                    builder.AddSystemdConsole(o =>
                     {
-                        if (context.HostingEnvironment.IsProduction())
-                        {
-                            o.DisableColors = true;
-                        }
-
-                        o.Format = ConsoleLoggerFormat.Systemd;
                         o.TimestampFormat = "[dd/MM/yyyy HH:mm:ss] ";
                     });
                 })
@@ -68,32 +60,21 @@ namespace Mmcc.MemberBot
                     services.Configure<SimpleCommandsSettings>(context.Configuration.GetSection("SimpleCommands"));
                     services.AddSingleton(provider => provider.GetRequiredService<IOptions<SimpleCommandsSettings>>().Value);
                     
-                    // add application parser;
-                    services.AddSingleton(provider => new MmccApplicationSerializer(true));
-                    
                     // add db connection;
-                    services.AddTransient(provider =>
+                    services.AddDbContext<MemberBotContext>((provider, options) =>
                     {
                         var config = provider.GetRequiredService<MySqlSettings>();
                         var connString =
                             $"Server={config.ServerIp};Port={config.Port};Database={config.DatabaseName};Uid={config.Username};Pwd={config.Password};Allow User Variables=True";
-                        return new MySqlConnection(connString);
+                        var serverVersion = ServerVersion.FromString("10.4.11-mariadb");
+                        
+                        options.UseMySql(connString, serverVersion);
                     });
-                    
-                    // add TcpClient for communication with Polychat;
-                    services.AddSingleton(provider =>
-                    {
-                        var config = provider.GetRequiredService<PolychatSettings>();
-                        var tcpClient = new TcpClient(config.ServerIp, config.Port)
-                        {
-                            SendBufferSize = config.BufferSize
-                        };
-                        return tcpClient;
-                    });
+
                     services.AddSingleton<ITcpCommunicationService, TcpCommunicationService>();
                     
                     // add MediatR;
-                    services.AddMediatR(typeof(Program), typeof(CreateNewApplication), typeof(DoesTableExist));
+                    services.AddMediatR(typeof(ApproveAutomatically));
                     
                     // add Discord services;
                     services.AddSingleton<IBotService, BotHostedService>();
@@ -121,8 +102,6 @@ namespace Mmcc.MemberBot
                     });
 
                     // add hosted services;
-                    services.AddHostedService<LifetimeEventsHostedService>();
-                    services.AddHostedService<StartupChecksHostedService>();
                     services.AddHostedService(provider => provider.GetRequiredService<IBotService>());
                     services.AddHostedService<CommandHostedService>();
                 });

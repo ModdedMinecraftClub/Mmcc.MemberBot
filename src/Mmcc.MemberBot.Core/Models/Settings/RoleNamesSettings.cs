@@ -2,6 +2,6 @@
 {
     public class RoleNamesSettings
     {
-        public string Staff { get; set; }
+        public string Staff { get; set; } = null!;
     }
 }

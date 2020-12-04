@@ -2,6 +2,6 @@
 {
     public class ChannelNamesSettings
     {
-        public string MemberApps { get; set; }
+        public string MemberApps { get; set; } = null!;
     }
 }

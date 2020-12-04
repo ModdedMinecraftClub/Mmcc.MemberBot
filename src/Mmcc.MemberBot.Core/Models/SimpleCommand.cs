@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace Mmcc.MemberBot.Core.Models
+﻿namespace Mmcc.MemberBot.Core.Models
 {
     public class SimpleCommand
     {

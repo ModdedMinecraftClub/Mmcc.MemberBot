@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Mmcc.MemberBot.Core.Protos;
+using Google.Protobuf;
 
 namespace Mmcc.MemberBot.Core.Interfaces
 {
     public interface ITcpCommunicationService
     {
-        Task SendPromoteMemberCommand(PromoteMemberCommand command);
+        Task SendProtobufMessage(IMessage protobufMessage);
     }
 }
