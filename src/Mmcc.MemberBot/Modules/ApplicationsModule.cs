@@ -55,7 +55,7 @@ namespace Mmcc.MemberBot.Modules
             {
                 var errorEmbed = new ErrorEmbedBuilder()
                     .WithStandardErrorEmbedLayout()
-                    .WithErrorMessage("Application with ID `{applicationId}` does not exist.")
+                    .WithErrorMessage($"Application with ID `{applicationId}` does not exist.")
                     .Build();
                 await Context.Channel.SendEmbedAsync(errorEmbed);
                 return;
