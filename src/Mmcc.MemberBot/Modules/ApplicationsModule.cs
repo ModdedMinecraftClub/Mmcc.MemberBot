@@ -148,7 +148,7 @@ namespace Mmcc.MemberBot.Modules
                     .WithColor(Color.Green)
                     .Build();
                 
-                await membersChannel.SendEmbedAsync(userNotificationEmbed);
+                await membersChannel.SendMessageAsync($"<@{cmdResult.Payload!.AuthorDiscordId}>", false, userNotificationEmbed);
                 await Context.Channel.SendEmbedAsync(staffNotificationEmbed);
             }
             else
@@ -233,7 +233,7 @@ namespace Mmcc.MemberBot.Modules
                     .WithColor(Color.Green)
                     .Build();
                 
-                await membersChannel.SendEmbedAsync(userNotificationEmbed);
+                await membersChannel.SendMessageAsync($"<@{cmdResult.Payload!.AuthorDiscordId}>", false, userNotificationEmbed);
                 await Context.Channel.SendEmbedAsync(staffNotificationEmbed);
             }
             else
