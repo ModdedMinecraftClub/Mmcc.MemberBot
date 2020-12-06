@@ -70,7 +70,7 @@ namespace Mmcc.MemberBot
                         options.UseMySql(connString, serverVersion);
                     });
 
-                    services.AddSingleton<ITcpCommunicationService, TcpCommunicationService>();
+                    services.AddScoped<ITcpCommunicationService, TcpCommunicationService>();
                     
                     // add MediatR;
                     services.AddMediatR(typeof(ApproveAutomatically));
