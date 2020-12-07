@@ -81,21 +81,21 @@ namespace Mmcc.MemberBot.Modules
         [Summary("Shows currently pending applications")]
         public async Task ViewPendingAsync()
         {
-            await SendApplicationsList(ApplicationStatus.Pending, null);
+            await SendApplicationsList(ApplicationStatus.Pending, null, false);
         }
 
         [Command("rejected", RunMode = RunMode.Async)]
         [Summary("Shows last 10 rejected applications")]
         public async Task ViewRejectedAsync()
         {
-            await SendApplicationsList(ApplicationStatus.Rejected, 10);
+            await SendApplicationsList(ApplicationStatus.Rejected, 10, true);
         }
         
         [Command("approved", RunMode = RunMode.Async)]
         [Summary("Shows last 10 rejected applications")]
         public async Task ViewApprovedAsync()
         {
-            await SendApplicationsList(ApplicationStatus.Approved, 10);
+            await SendApplicationsList(ApplicationStatus.Approved, 10, true);
         }
 
         #endregion
@@ -244,10 +244,10 @@ namespace Mmcc.MemberBot.Modules
 
         #endregion
 
-        private async Task SendApplicationsList(ApplicationStatus status, int? limit)
+        private async Task SendApplicationsList(ApplicationStatus status, int? limit, bool sortByDescending)
         {
             var pendingApps = await _mediator.Send(new GetByStatus.Query
-                {Status = status, Limit = limit});
+                {Status = status, Limit = limit, SortByDescending = sortByDescending});
             var statusText = status.ToString().ToLower();
 
             if (pendingApps.IsEmpty())
@@ -257,9 +257,9 @@ namespace Mmcc.MemberBot.Modules
             }
 
             var embed = new EmbedBuilder()
-                .WithTitle(limit is null
-                    ? $"{statusText.First().ToString().ToUpper() + statusText.Substring(1)} applications"
-                    : $"Last {limit} {statusText} applications")
+                .WithTitle(sortByDescending 
+                    ? $"Last {statusText} applications" 
+                    : $"{statusText.First().ToString().ToUpper() + statusText.Substring(1)} applications")
                 .WithColor(Color.Blue)
                 .WithMmccLogo()
                 .WithApplicationFields(pendingApps)

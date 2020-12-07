@@ -15,6 +15,7 @@ namespace Mmcc.MemberBot.Infrastructure.Queries.Applications
         {
             public ApplicationStatus Status { get; set; }
             public int? Limit { get; set; }
+            public bool SortByDescending { get; set; }
         }
         
         public class Handler : IRequestHandler<Query, IList<Application>>
@@ -31,14 +32,12 @@ namespace Mmcc.MemberBot.Infrastructure.Queries.Applications
                 var data = _context.Applications
                     .AsQueryable()
                     .Where(a => a.AppStatus == request.Status)
+                    .Take(request.Limit ?? 100)
                     .AsNoTracking();
 
-                if (request.Limit is not null)
+                if (request.SortByDescending)
                 {
-                    return await data
-                        .OrderByDescending(x => x.AppId)
-                        .Take((int)request.Limit)
-                        .ToListAsync(cancellationToken);
+                    data = data.OrderByDescending(a => a.AppId);
                 }
 
                 return await data.ToListAsync(cancellationToken);
