@@ -6,11 +6,11 @@ using Discord.Rest;
 using Discord.WebSocket;
 using MediatR;
 using Mmcc.MemberBot.Core;
+using Mmcc.MemberBot.Core.Extensions;
 using Mmcc.MemberBot.Core.Interfaces;
 using Mmcc.MemberBot.Core.Models;
 using Mmcc.MemberBot.Core.Models.Settings;
 using Mmcc.MemberBot.Core.Protos;
-using Mmcc.MemberBot.Infrastructure.Extensions;
 
 namespace Mmcc.MemberBot.Infrastructure.Commands.Applications
 {

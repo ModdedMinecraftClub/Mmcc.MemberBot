@@ -5,9 +5,9 @@ using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Mmcc.MemberBot.Core.Extensions;
 using Mmcc.MemberBot.Core.Interfaces;
 using Mmcc.MemberBot.Core.Models.Settings;
-using Mmcc.MemberBot.Infrastructure.Extensions;
 
 namespace Mmcc.MemberBot.Infrastructure.HostedServices
 {

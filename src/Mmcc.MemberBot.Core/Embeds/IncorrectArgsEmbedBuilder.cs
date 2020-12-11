@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using Discord;
-using Mmcc.MemberBot.Infrastructure.Extensions;
+using Mmcc.MemberBot.Core.Extensions;
 
-namespace Mmcc.MemberBot.Infrastructure
+namespace Mmcc.MemberBot.Core.Embeds
 {
     public class IncorrectArgsEmbedBuilder : EmbedBuilder
     {

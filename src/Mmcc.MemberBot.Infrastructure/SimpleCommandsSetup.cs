@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Discord;
 using Discord.Commands;
+using Mmcc.MemberBot.Core.Extensions;
 using Mmcc.MemberBot.Core.Models;
-using Mmcc.MemberBot.Infrastructure.Extensions;
 
 namespace Mmcc.MemberBot.Infrastructure
 {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Discord;
-using Mmcc.MemberBot.Core;
+using Mmcc.MemberBot.Core.Embeds;
 using Mmcc.MemberBot.Core.Models;
 
-namespace Mmcc.MemberBot.Infrastructure.Extensions
+namespace Mmcc.MemberBot.Core.Extensions
 {
     public static class EmbedExtensions
     {
@@ -43,14 +43,6 @@ namespace Mmcc.MemberBot.Infrastructure.Extensions
             }
 
             return builder;
-        }
-
-        public static Embed ToErrorEmbed<T>(this CommandResult<T> result)
-        {
-            var eb = new ErrorEmbedBuilder()
-                .WithErrorMessage(result.FailureReason!);
-
-            return eb.Build();
         }
     }
 }

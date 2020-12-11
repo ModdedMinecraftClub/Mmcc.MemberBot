@@ -4,11 +4,12 @@ using Discord;
 using Discord.Commands;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Mmcc.MemberBot.Core.Embeds;
+using Mmcc.MemberBot.Core.Extensions;
 using Mmcc.MemberBot.Core.Models;
 using Mmcc.MemberBot.Core.Models.Settings;
 using Mmcc.MemberBot.Infrastructure;
 using Mmcc.MemberBot.Infrastructure.Commands.Applications;
-using Mmcc.MemberBot.Infrastructure.Extensions;
 using Mmcc.MemberBot.Infrastructure.Queries.Applications;
 
 namespace Mmcc.MemberBot.Modules

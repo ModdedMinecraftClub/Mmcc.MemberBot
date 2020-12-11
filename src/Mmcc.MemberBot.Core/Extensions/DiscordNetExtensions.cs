@@ -6,7 +6,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 
-namespace Mmcc.MemberBot.Infrastructure.Extensions
+namespace Mmcc.MemberBot.Core.Extensions
 {
     /// <summary>
     /// Extension methods for Discord.NET

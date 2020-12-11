@@ -2,8 +2,8 @@
 using Discord;
 using Discord.Commands;
 using Microsoft.Extensions.Logging;
+using Mmcc.MemberBot.Core.Extensions;
 using Mmcc.MemberBot.Core.Models.Settings;
-using Mmcc.MemberBot.Infrastructure.Extensions;
 
 namespace Mmcc.MemberBot.Modules
 {
