@@ -6,13 +6,12 @@ namespace Mmcc.MemberBot.Infrastructure
 {
     public class ErrorEmbedBuilder : EmbedBuilder
     {
-        public ErrorEmbedBuilder WithStandardErrorEmbedLayout()
+        public ErrorEmbedBuilder()
         {
             WithTitle(":x: Error")
                 .WithDescription("An error has occurred while executing the command.")
                 .WithColor(Discord.Color.Red)
                 .WithMmccLogo();
-            return this;
         }
 
         public ErrorEmbedBuilder WithErrorMessage(string message)

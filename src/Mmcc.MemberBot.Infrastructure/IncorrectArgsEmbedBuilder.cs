@@ -7,12 +7,11 @@ namespace Mmcc.MemberBot.Infrastructure
 {
     public class IncorrectArgsEmbedBuilder : EmbedBuilder
     {
-        public IncorrectArgsEmbedBuilder WithStandardIncorrectArgsEmbedLayout()
+        public IncorrectArgsEmbedBuilder()
         {
             WithTitle(":exclamation: Incorrect arguments")
                 .WithColor(Discord.Color.Magenta)
                 .WithMmccLogo();
-            return this;
         }
 
         public IncorrectArgsEmbedBuilder WithUsageField(string usage)

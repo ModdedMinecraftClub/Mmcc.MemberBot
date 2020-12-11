@@ -48,7 +48,6 @@ namespace Mmcc.MemberBot.Infrastructure.Extensions
         public static Embed ToErrorEmbed<T>(this CommandResult<T> result)
         {
             var eb = new ErrorEmbedBuilder()
-                .WithStandardErrorEmbedLayout()
                 .WithErrorMessage(result.FailureReason!);
 
             return eb.Build();

@@ -37,7 +37,6 @@ namespace Mmcc.MemberBot.Modules
         public async Task ViewAsync()
         {
             var embed = new IncorrectArgsEmbedBuilder()
-                .WithStandardIncorrectArgsEmbedLayout()
                 .WithUsageField($"{_config.Prefix}view <applicationId>")
                 .Build();
             await Context.Channel.SendEmbedAsync(embed);
@@ -54,7 +53,6 @@ namespace Mmcc.MemberBot.Modules
             if (app is null)
             {
                 var errorEmbed = new ErrorEmbedBuilder()
-                    .WithStandardErrorEmbedLayout()
                     .WithErrorMessage($"Application with ID `{applicationId}` does not exist.")
                     .Build();
                 await Context.Channel.SendEmbedAsync(errorEmbed);
@@ -108,7 +106,6 @@ namespace Mmcc.MemberBot.Modules
         public async Task ApproveAsync()
         {
             var embed = new IncorrectArgsEmbedBuilder()
-                .WithStandardIncorrectArgsEmbedLayout()
                 .WithUsageField($"{_config.Prefix}approve <applicationId> <serverPrefix> <ign>")
                 .WithAlternativeUsage($"{_config.Prefix}approve <applicationId> manual")
                 .Build();
@@ -199,7 +196,6 @@ namespace Mmcc.MemberBot.Modules
         public async Task RejectAsync()
         {
             var embed = new IncorrectArgsEmbedBuilder()
-                .WithStandardIncorrectArgsEmbedLayout()
                 .WithUsageField($"{_config.Prefix}reject <applicationId> <reason>")
                 .Build();
             await Context.Channel.SendEmbedAsync(embed);
