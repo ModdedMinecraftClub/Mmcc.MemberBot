@@ -18,7 +18,7 @@ To see all the available commands simply use the `help` command in a server with
 
 1. Deploy [polychat2](https://github.com/ModdedMinecraftClub/polychat2).
 2. Create a MySQL database for the bot.
-3. Download the latest compiled version of the bot from [here](https://github.com/ModdedMinecraftClub/Mmcc.MemberBot/releases). If you choose the `portable-fxdependent` version of the bot, you will need to also download .NET 5 from [here](https://dotnet.microsoft.com/download).
+3. Download the latest compiled version of the bot from [here](https://github.com/ModdedMinecraftClub/Mmcc.MemberBot/releases). If you choose the `portable-fxdependent` version of the bot, you will need to also download the newest version of .NET from [here](https://dotnet.microsoft.com/download).
 4. Unzip the compressed version of the bot you've downloaded.
 5. Go to the folder with the unzipped binaries.
 6. Rename `appsettings.default.json` to `appsettings.json` and edit it so that it contains correct values for your use-case scenario.
@@ -26,7 +26,8 @@ To see all the available commands simply use the `help` command in a server with
 
 ## Building a production build from source
 
-1. Clone this repository.
-2. In the main directory run `dotnet publish ./src/Mmcc.MemberBot -r linux-x64 -c Release --output ./out`. If you want a single file build instead, run the included `publish.ps1` script or run `dotnet publish ./src/Mmcc.MemberBot -r linux-x64 -c Release /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true --output ./out` and delete the `.pdb` files.
+1. Make sure you have .NET installed, and if not get the latest build from [here](https://dotnet.microsoft.com/download).
+2. Clone this repository.
+3. In the main directory run `dotnet publish ./src/Mmcc.MemberBot -r linux-x64 -c Release --output ./out`. If you want a single file build instead, run the included `publish.ps1` script or run `dotnet publish ./src/Mmcc.MemberBot -r linux-x64 -c Release /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true --output ./out` and delete the `.pdb` files.
 
 Your compiled binaries will be in `./out`.
