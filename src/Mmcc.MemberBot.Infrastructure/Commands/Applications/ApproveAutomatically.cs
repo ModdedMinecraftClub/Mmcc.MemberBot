@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace Mmcc.MemberBot.Infrastructure.Commands.Applications
             public SocketGuild Guild { get; set; } = null!;
             public int ApplicationId { get; set; }
             public string ServerPrefix { get; set; } = null!;
-            public string Ign { get; set; } = null!;
+            public IList<string> Igns { get; set; } = null!;
         }
 
         public class Handler : IRequestHandler<Command, CommandResult<Application>>
@@ -56,20 +57,23 @@ namespace Mmcc.MemberBot.Infrastructure.Commands.Applications
                 var userToPromote = await req.RestClient.GetGuildUserAsync(req.Guild.Id, app.AuthorDiscordId);
                 if (userToPromote is null)
                     return new CommandResult<Application>($"Cannot find a user with ID `{app.AuthorDiscordId}`.");
-                
-                var polychatCommand = new PromoteMemberCommand
-                {
-                    ServerId = req.ServerPrefix,
-                    Username = req.Ign
-                };
 
-                try
+                foreach (var ign in req.Igns)
                 {
-                    await _tcpCommunicationService.SendProtobufMessage(polychatCommand);
-                }
-                catch (SocketException e)
-                {
-                    return new CommandResult<Application>($"Failed to connect to Polychat Server.\n`{e.GetType()}: {e.Message}`");
+                    var polychatCommand = new PromoteMemberCommand
+                    {
+                        ServerId = req.ServerPrefix,
+                        Username = ign
+                    };
+
+                    try
+                    {
+                        await _tcpCommunicationService.SendProtobufMessage(polychatCommand);
+                    }
+                    catch (SocketException e)
+                    {
+                        return new CommandResult<Application>($"Failed to connect to Polychat Server.\n`{e.GetType()}: {e.Message}`");
+                    }
                 }
                 
                 await userToPromote.AddRoleAsync(memberRole);
