@@ -117,13 +117,13 @@ namespace Mmcc.MemberBot.Modules
         [Summary("Approves a particular application")]
         [Priority(1)]
         [RequireUserPermission(GuildPermission.BanMembers)]
-        public async Task ApproveAsync(int applicationId, string serverPrefix, params string[] igns)
+        public async Task ApproveAsync(int applicationId, string serverPrefix, params string[] ignsList)
         {
             var cmd = new ApproveAutomatically.Command
             {
                 RestClient = Context.Client.Rest,
                 Guild = Context.Guild,
-                Igns = igns.ToList(),
+                Igns = ignsList.ToList(),
                 ApplicationId = applicationId,
                 ServerPrefix = serverPrefix
             };
