@@ -31,15 +31,12 @@ namespace Mmcc.MemberBot.Infrastructure.Queries.Applications
             {
                 var data = _context.Applications
                     .AsQueryable()
-                    .Where(a => a.AppStatus == request.Status)
+                    .Where(a => a.AppStatus == request.Status);
+                data = (request.SortByDescending 
+                        ? data.OrderByDescending(a => a.AppId) 
+                        : data.OrderBy(a => a.AppId))
                     .Take(request.Limit ?? 100)
                     .AsNoTracking();
-
-                if (request.SortByDescending)
-                {
-                    data = data.OrderByDescending(a => a.AppId);
-                }
-
                 return await data.ToListAsync(cancellationToken);
             }
         }
